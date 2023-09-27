@@ -1,0 +1,474 @@
+--*************************************************************************************************************************
+-- ************** 자유게시판 **************************************************************************
+  CREATE TABLE freeboard (
+  fb_num     number,
+  fb_subject varchar2(100) NOT NULL,
+  fb_writer  varchar2(30) NOT NULL,
+  fb_content varchar2(255) NOT NULL,
+  fb_hit     number NOT NULL,
+  fb_reip    varchar2(30) NOT NULL,
+  fb_date    date DEFAULT sysdate NOT NULL,
+  fb_update  date DEFAULT sysdate NOT NULL,
+  fb_file		 VARCHAR2(500) NOT NULL,
+  PRIMARY KEY (fb_num));
+
+-- ************** 자유게시판 댓글 **************************************************************************
+CREATE TABLE freeboard_comm (
+  fbc_num      number,
+  fbc_ucode    number NOT NULL,
+  fbc_uwriter  varchar2(30) NOT NULL,
+  fbc_ucontent varchar2(400) NOT NULL,
+  fbc_reip     varchar2(30) NOT NULL,
+  fbc_uregdate date DEFAULT sysdate NOT NULL,
+  PRIMARY KEY (fbc_num));
+ALTER TABLE freeboard_comm ADD CONSTRAINT freeboard_fbc_ucode_fk FOREIGN KEY (fbc_ucode) REFERENCES freeboard (fb_num) on delete Cascade;
+
+-------------------------------------------------------------------------------------
+create sequence freeboard_comm_seq increment by 1 start with 1;
+create SEQUENCE freeboard_seq increment by 1 start with 1;
+
+--*************************************************************************************************************************
+-- ************** 회원 **************************************************************************
+CREATE TABLE trip_member (
+  mem_num    number,
+  mem_id     varchar2(30) NOT NULL UNIQUE,
+  mem_nick   varchar2(30) NOT NULL UNIQUE,
+  mem_name   varchar2(30) NOT NULL,
+  mem_email  varchar2(100) NOT NULL UNIQUE,
+  mem_pwd    varchar2(50) NOT NULL,
+  mem_ip     varchar2(30) NOT NULL,
+  mem_date   date DEFAULT SYSDATE  NOT NULL,
+  mem_grade  varchar2(30) DEFAULT 'Normal',
+  mem_mypic  VARCHAR(500) NOT NULL,
+  PRIMARY KEY (mem_num));
+--************************
+-- 회원정보 수정을 위한 트리거 생성
+CREATE OR REPLACE TRIGGER update_mini_home_host
+AFTER UPDATE OF mem_nick ON trip_member
+FOR EACH ROW
+BEGIN
+    UPDATE mini_home
+    SET mini_home_host = :NEW.mem_nick
+    WHERE mini_home_host = :OLD.mem_nick;
+    UPDATE Trip_Diary
+    SET dia_nick = :NEW.mem_nick
+    WHERE dia_nick = :OLD.mem_nick;
+    UPDATE dia_comm
+    SET dia_comm_nick = :NEW.mem_nick
+    WHERE dia_comm_nick = :OLD.mem_nick;
+    UPDATE mini_diary
+    SET mini_dia_nick = :NEW.mem_nick
+    WHERE mini_dia_nick = :OLD.mem_nick;
+    UPDATE mini_photo
+    SET mini_pho_nick = :NEW.mem_nick
+    WHERE mini_pho_nick = :OLD.mem_nick;
+END;
+/
+-------------------------------------------------------------------------------------
+
+create sequence trip_member_seq increment by 1 start with 1;
+
+--*************************************************************************************************************************
+
+-- ************** 미니홈피 **************************************************************************
+-- 미니홈피 : 미니홈피테이블
+CREATE TABLE mini_home (
+mini_home_num 		NUMBER PRIMARY KEY,
+mini_home_title 	VARCHAR2(255),
+mini_home_content VARCHAR(255),
+mini_home_thumbnail VARCHAR2(255),
+mini_home_host 		VARCHAR2(255),
+mini_home_date 		DATE
+);
+ALTER TABLE mini_home ADD CONSTRAINT mini_home_mini_home_host_fk FOREIGN KEY (mini_home_host) REFERENCES trip_member (mem_nick) on delete Cascade;
+
+-- 미니홈피 : 미니다이어리테이블
+CREATE TABLE mini_diary (
+  mini_dia_num       number,
+  mini_dia_code      number,
+  mini_dia_nick      varchar2(30) NOT NULL,
+  mini_dia_sub       varchar2(255) NOT NULL,
+  mini_dia_content   varchar2(255) NOT NULL,
+  mini_dia_date      date NOT NULL,
+  PRIMARY KEY (mini_dia_num));
+ALTER TABLE mini_diary ADD CONSTRAINT mini_diary_mini_dia_nick_fk FOREIGN KEY (mini_dia_nick) REFERENCES trip_member (mem_nick) on delete Cascade;
+ALTER TABLE mini_diary ADD CONSTRAINT mini_diary_mini_dia_code_fk FOREIGN KEY (mini_dia_code) REFERENCES mini_home (mini_home_num) on delete Cascade;
+
+-- 미니홈피 : 미니홈피사진첩테이블
+CREATE TABLE mini_photo (
+  mini_pho_num     number,
+  mini_pho_code    number,
+  mini_pho_nick    varchar2(30) NOT NULL,
+  mini_pho_sub     varchar2(255) NOT NULL,
+  mini_pho_file    varchar2(255) NOT NULL,
+  mini_pho_date    date NOT NULL,
+  PRIMARY KEY (mini_pho_num));
+ALTER TABLE mini_photo ADD CONSTRAINT FKmini_photo FOREIGN KEY (mini_pho_nick) REFERENCES trip_member (mem_nick);
+ALTER TABLE mini_photo ADD CONSTRAINT mini_diary_mini_pho_code_fk FOREIGN KEY (mini_pho_code) REFERENCES mini_home (mini_home_num) on delete Cascade;
+
+-------------------------------------------------------------------------------------
+-- 미니홈피 : 미니홈피
+CREATE SEQUENCE mini_home_seq INCREMENT BY 1 START WITH 1;
+-- 미니홈피 : 미니다이어리
+CREATE SEQUENCE mini_diary_seq INCREMENT BY 1 START WITH 1;
+-- 미니홈피 : 사진첩
+CREATE SEQUENCE mini_photo_seq INCREMENT BY 1 START WITH 1;
+
+--*************************************************************************************************************************
+--*************************************************************************************************************************
+--************************************* 다이어리 ****************************************************************
+CREATE TABLE Trip_Diary (
+  dia_num       number,
+  dia_nick      varchar2(30) NOT NULL,
+  dia_sub       varchar2(200) NOT NULL,
+  dia_summ      varchar2(100) NOT null,
+  dia_start     date NOT NULL,
+  dia_end       date NOT NULL,
+  dia_thumbnail varchar2(200) NOT null,
+  dia_hit NUMBER NOT null,
+  dia_like NUMBER NOT null,
+  dia_star NUMBER NOT null,
+  dia_date date NOT NULL,
+  dia_update date NOT NULL,
+  dia_public NUMBER(10) NOT NULL,
+  dia_type varchar2(30) NOT NULL,
+  PRIMARY KEY (dia_num));
+ALTER TABLE Trip_Diary ADD CONSTRAINT Trip_Diary_dia_nick_fk FOREIGN KEY (dia_nick) REFERENCES trip_member (mem_nick) on delete Cascade;
+--alter table Trip_Diary add dia_update date ;
+--alter table Trip_Diary add dia_public NUMBER(10);
+--alter table Trip_Diary add dia_type varchar2(30);
+-- 다이어리시퀀스
+create SEQUENCE Trip_Diary_seq increment by 1 start with 1;
+
+--************************************* 다이어리댓글 ****************************************************************
+CREATE TABLE dia_comm (
+  dia_comm_num  number,
+  dia_comm_code number NOT NULL,
+  dia_comm_nick varchar2(30) NOT NULL,
+  dia_comm_cont varchar2(500),
+	dia_comm_date date DEFAULT sysdate NOT NULL,
+	dia_comm_ip varchar2(30) NOT NULL,
+	dia_comm_update date DEFAULT sysdate NOT NULL,
+  PRIMARY KEY (dia_comm_num));
+ALTER TABLE dia_comm ADD CONSTRAINT dia_comm_dia_comm_nick_fk FOREIGN KEY (dia_comm_nick) REFERENCES trip_member (mem_nick) on delete Cascade;
+ALTER TABLE dia_comm ADD CONSTRAINT dia_comm_dia_comm_code_fk FOREIGN KEY (dia_comm_code) REFERENCES Trip_Diary (dia_num) on delete Cascade;
+
+-------------------------------------------------------------------------------------
+-- 다이어리댓글시퀀스
+CREATE SEQUENCE dia_comm_seq increment by 1 start with 1;
+
+--*************************************************************************************************************************
+--************************************* 계획 ****************************************************************
+-- 다이어리계획: 스케줄테이블 -----------------------------------------------------------------------------------
+CREATE TABLE plan_schedule (
+  plan_sc_num  number,
+  plan_sc_code number NOT NULL,
+  plan_sc_loca varchar2(60) NOT NULL,
+  plan_sc_time varchar2(20) NOT NULL,
+  plan_sc_addr varchar2(1000) NOT NULL,
+  plan_sc_type varchar2(40) NOT NULL,
+  plan_sc_cost number NOT NULL,
+  plan_sc_memo varchar2(1000) NOT NULL,
+  PRIMARY KEY (plan_sc_num));
+ALTER TABLE plan_schedule ADD CONSTRAINT plan_schedule_plan_sc_code_fk FOREIGN KEY (plan_sc_code) REFERENCES Trip_Diary (dia_num) on delete Cascade;
+
+-- 다이어리계획: 해시태그테이블 -----------------------------------------------------------------------------------
+CREATE TABLE plan_hashtag (
+  plan_hash_num  number,
+  plan_hash_code number NOT NULL,
+  plan_hash_tag  varchar2(20) NOT NULL,
+  PRIMARY KEY (plan_hash_num));
+ALTER TABLE plan_hashtag ADD CONSTRAINT plan_hashtag_plan_hash_code_fk FOREIGN KEY (plan_hash_code) REFERENCES Trip_Diary (dia_num) on delete Cascade;
+
+-- 다이어리계획: 준비물테이블 -----------------------------------------------------------------------------------
+CREATE TABLE plan_material (
+  plan_mtr_num      number,
+  plan_mtr_code     number NOT NULL,
+  plan_mtr_class    varchar2(20) NOT NULL,
+  plan_mtr_category NUMBER(10) NOT NULL,
+  PRIMARY KEY (plan_mtr_num));
+
+ALTER TABLE plan_material ADD CONSTRAINT plan_material_plan_mtr_code_fk FOREIGN KEY (plan_mtr_code) REFERENCES Trip_Diary (dia_num) on delete Cascade;
+--alter table plan_material drop constraint plan_material_plan_mtr_code_fk;
+-- 다이어리계획: 준비물세부테이블 -----------------------------------------------------------------------------------
+CREATE TABLE plan_materiallist (
+  plan_mtrlist_num  number,
+  plan_mtrlist_code number NOT NULL,
+  plan_mtr_material varchar2(50) NOT NULL,
+  plan_mtr_check    number(5) NOT NULL,
+  plan_mtrlist_category NUMBER(10) NOT NULL,
+  PRIMARY KEY (plan_mtrlist_num));
+
+ALTER TABLE plan_materiallist ADD CONSTRAINT plan_materiallist_code_fk FOREIGN KEY (plan_mtrlist_code) REFERENCES Trip_Diary (dia_num) on delete Cascade;
+--alter table plan_materiallist drop constraint plan_materiallist_code_fk;
+-- 다이어리계획: 사진테이블 -----------------------------------------------------------------------------------
+CREATE TABLE plan_photo (
+  plan_photo_num   number,
+  plan_photo_code  number NOT NULL,
+  plan_photo_title varchar2(1000) NOT NULL,
+  PRIMARY KEY (plan_photo_num));
+ALTER TABLE plan_photo ADD CONSTRAINT plan_photo_plan_photo_code_fk FOREIGN KEY (plan_photo_code) REFERENCES Trip_Diary (dia_num) on delete Cascade;
+
+--************************************* 다이어리 계획 시퀀스 ****************************************************************
+-- 다이어리계획 : 스케줄시퀀스
+create SEQUENCE plan_schedule_seq increment by 1 start with 1;
+-- 다이어리계획 : 해시태그시퀀스
+create SEQUENCE plan_hashtag_seq increment by 1 start with 1;
+-- 다이어리계획 : 준비물시퀀스
+create SEQUENCE plan_material_seq increment by 1 start with 1;
+-- 다이어리계획 : 준비물세부시퀀스
+create SEQUENCE plan_materiallist_seq increment by 1 start with 1;
+-- 다이어리계획 : 사진시퀀스
+create SEQUENCE plan_photo_seq increment by 1 start with 1;
+
+--************************************** 다이어리 계획 시퀀스함수 ***************************************************************
+-- 다이어리계획: 스케줄시퀀스함수
+CREATE OR REPLACE FUNCTION PLAN_SCHEDULE_FUNC RETURN NUMBER
+IS
+BEGIN
+RETURN plan_schedule_SEQ.NEXTVAL;
+END;
+/
+-- 다이어리계획: 해시태그시퀀스함수
+CREATE OR REPLACE FUNCTION PLAN_HASH_FUNC RETURN NUMBER
+IS
+BEGIN
+RETURN plan_hashtag_seq.NEXTVAL;
+END;
+/
+-- 다이어리계획: 준비물시퀀스함수
+CREATE OR REPLACE FUNCTION plan_material_FUNC RETURN NUMBER
+IS
+BEGIN
+RETURN plan_material_seq.NEXTVAL;
+END;
+/
+-- 다이어리계획: 준비물세부시퀀스함수
+CREATE OR REPLACE FUNCTION plan_materiallist_FUNC RETURN NUMBER
+IS
+BEGIN
+RETURN plan_materiallist_seq.NEXTVAL;
+END;
+/
+-- 다이어리계획: 사진시퀀스함수
+CREATE OR REPLACE FUNCTION plan_photo_FUNC RETURN NUMBER
+IS
+BEGIN
+RETURN plan_photo_seq.NEXTVAL;
+END;
+/
+
+--*************************************************************************************************************************
+--*************************************************************************************************************************
+--*************************************기록****************************************************************
+--다이어리기록: 스케줄테이블-----------------------------------------------------------------------------------
+CREATE TABLE rec_schedule (
+  rec_sc_num  number ,
+  rec_sc_code number NOT NULL,
+  rec_sc_nday NUMBER NOT NULL,
+  rec_sc_loca varchar2(60) NOT NULL,
+  rec_sc_time varchar2(20) NOT NULL,
+  rec_sc_addr VARCHAR2(1000) NOT NULL,
+  rec_sc_type VARCHAR2(40) NOT null,
+  rec_sc_cost number NOT null,
+  rec_sc_memo VARCHAR2(1000) NOT NULL,
+  PRIMARY KEY (rec_sc_num));
+ALTER TABLE rec_schedule ADD CONSTRAINT rec_schedule_rec_sc_code_fk FOREIGN KEY (rec_sc_code) REFERENCES Trip_Diary (dia_num) on delete Cascade;
+
+--다이어리기록: 사진테이블-----------------------------------------------------------------------------------
+CREATE TABLE rec_photo (
+  rec_photo_num   number ,
+  rec_photo_code  number NOT NULL,
+  rec_photo_title VARCHAR2(1000) NOT NULL,
+  rec_photo_nday number NOT NULL,
+  PRIMARY KEY (rec_photo_num));
+ALTER TABLE rec_photo ADD CONSTRAINT rec_photo_rec_photo_code_fk FOREIGN KEY (rec_photo_code) REFERENCES Trip_Diary (dia_num) on delete Cascade;
+
+-- 다이어리기록: 해시태그테이블 -----------------------------------------------------------------------------------
+CREATE TABLE rec_hashtag (
+	rec_hash_num number,
+	rec_hash_code number,
+	rec_hash_tag VARCHAR2(20),
+	PRIMARY KEY (rec_hash_num)
+);
+ALTER TABLE rec_hashtag ADD CONSTRAINT rec_hashtag_rec_hash_code_fk FOREIGN KEY (rec_hash_code) REFERENCES Trip_Diary (dia_num) on delete Cascade;
+
+-- 다이어리기록: n일차테이블 -----------------------------------------------------------------------------------
+CREATE TABLE rec_nday (
+  rec_nday_num  number,
+  rec_nday_code number NOT NULL,
+  rec_nday_nday number NOT NULL,
+  PRIMARY KEY (rec_nday_num));
+ALTER TABLE rec_nday ADD CONSTRAINT rec_nday_rec_nday_code_fk FOREIGN KEY (rec_nday_code) REFERENCES Trip_Diary (dia_num) on delete Cascade;
+
+--************************************* 다이어리기록 시퀀스 ****************************************************************
+-- 다이어리기록: 스케줄시퀀스
+create SEQUENCE rec_schedule_seq increment by 1 start with 1;
+-- 다이어리기록: 사진시퀀스
+create SEQUENCE rec_photo_seq increment by 1 start with 1;
+-- 다이어리기록: 해시태그시퀀스
+CREATE SEQUENCE rec_hash_seq INCREMENT BY 1 START WITH 1;
+-- 다이어리기록: n일차시퀀스
+CREATE SEQUENCE rec_nday_seq INCREMENT BY 1 START WITH 1;
+--************************************** 다이어리기록 함수 ***************************************************************
+-- 다이어리기록: 스케줄시퀀스함수
+CREATE OR REPLACE FUNCTION REC_SCHEDULE_FUNC RETURN NUMBER
+IS
+BEGIN
+RETURN REC_SCHEDULE_SEQ.NEXTVAL;
+END;
+/
+-- 다이어리기록: 사진시퀀스함수
+CREATE OR REPLACE FUNCTION REC_PHOTO_FUNC RETURN NUMBER
+IS
+BEGIN
+RETURN REC_PHOTO_SEQ.NEXTVAL;
+END;
+/
+-- 다이어리기록: 해시태그시퀀스함수
+CREATE OR REPLACE FUNCTION rec_hash_FUNC RETURN NUMBER
+IS
+BEGIN
+RETURN rec_hash_seq.NEXTVAL;
+END;
+/
+-- 다이어리기록:n일차시퀀스함수
+CREATE OR REPLACE FUNCTION rec_nday_FUNC RETURN NUMBER
+IS
+BEGIN
+RETURN rec_nday_seq.NEXTVAL;
+END;
+/
+
+--*************************************************************************************************************************
+--*************************************************************************************************************************
+--************************************* 호텔예약 ****************************************************************
+-- 호텔, 사업자 관련 테이블
+CREATE TABLE hotel (
+hotel_num number,
+hotel_photo_seq number NOT NULL,
+hotel_id varchar2(30) NOT NULL UNIQUE,
+hotel_pwd varchar2(50) NOT NULL,
+hotel_email varchar2(100) NOT NULL,
+hotel_tel varchar2(50) NOT NULL,
+hotel_owner varchar2(30) NOT NULL,
+hotel_addr varchar2(150) NOT NULL,
+hotel_categori varchar2(30) NOT NULL,
+hotel_name varchar2(50) NOT NULL,
+hotel_info varchar2(1000) NOT NULL,
+hotel_guide VARCHAR(1500) NOT NULL,
+hotel_grade number(10) NOT NULL,
+hotel_photo_thumbnail NUMBER DEFAULT 1,
+hotel_review_point NUMBER(10,1) DEFAULT 0,
+PRIMARY KEY (hotel_num));
+-- 예약 테이블
+CREATE TABLE hotel_booking (
+booking_num number,
+mem_code number NOT NULL,
+room_code number NOT NULL,
+hotel_code varchar2(50) NOT NULL,
+room_name varchar2(50) NOT NULL,
+booking_checkin date NOT NULL,
+booking_checkout date NOT NULL,
+BOOKING_PERSONS NUMBER(10) NOT NULL,
+BOOKING_CHILD NUMBER(10) NOT NULL,
+booking_date date NOT NULL,
+PRIMARY KEY (booking_num));
+-- 호텔 찜 테이블
+CREATE TABLE hotel_favorate (
+mem_code number NOT NULL,
+hotel_code number NOT NULL);
+-- 호텔 옵션 테이블
+CREATE TABLE hotel_option (
+hotel_code number NOT NULL,
+option_spa number(10) NOT NULL,
+option_parking number(10) NOT NULL,
+option_wifi number(10) NOT NULL,
+option_brunch number(10) NOT NULL,
+option_restaurant number(10) NOT NULL,
+option_swim number(10) NOT NULL);
+-- 호텔 사진 모음 테이블
+CREATE TABLE hotel_photo (
+hotel_photo_num number,
+hotel_photo_title varchar2(500) NOT NULL,
+hotel_photo_seq number NOT NULL,
+PRIMARY KEY (hotel_photo_num));
+-- 호텔 사진 시퀀스 테이블
+CREATE TABLE hotel_photo_sequence (
+hotel_photo_seq number,
+PRIMARY KEY (hotel_photo_seq));
+-- 호텔 리뷰 테이블
+CREATE TABLE hotel_review (
+review_num number,
+mem_code number NOT NULL,
+hotel_code number NOT NULL,
+booking_code number NOT NULL,
+review_cont varchar2(1000) NOT NULL,
+review_date date NOT NULL,
+review_point number(10) NOT NULL,
+review_summ VARCHAR2(100) NOT NULL,
+PRIMARY KEY (review_num));
+-- 호텔 객실 테이블
+CREATE TABLE hotel_room (
+room_num number,
+hotel_code number NOT NULL,
+hotel_photo_seq number NOT NULL,
+room_name varchar2(30) NOT NULL,
+room_type VARCHAR2(300) NOT NULL,
+room_max number(20) NOT NULL,
+room_people NUMBER NOT NULL,
+room_view VARCHAR2(300) NOT NULL,
+room_floor NUMBER NOT NULL,
+room_price number NOT NULL,
+room_bedtype VARCHAR2(300) NOT NULL,
+room_bednumber NUMBER NOT NULL,
+hotel_photo_thumbnail NUMBER DEFAULT 1,
+PRIMARY KEY (room_num));
+--------------------------------------------------------------------------------------------------------------------
+ALTER TABLE hotel ADD CONSTRAINT hotel_hotel_photo_seq_fk FOREIGN KEY (hotel_photo_seq) REFERENCES hotel_photo_sequence (hotel_photo_seq) on delete Cascade;
+ALTER TABLE hotel_option ADD CONSTRAINT hotel_option_hotel_code_fk FOREIGN KEY (hotel_code) REFERENCES hotel (hotel_num) on delete Cascade;
+ALTER TABLE hotel_room ADD CONSTRAINT hotel_room_hotel_code_fk FOREIGN KEY (hotel_code) REFERENCES hotel (hotel_num) on delete Cascade;
+ALTER TABLE hotel_room ADD CONSTRAINT hotel_room_hotel_photo_seq_fk FOREIGN KEY (hotel_photo_seq) REFERENCES hotel_photo_sequence (hotel_photo_seq) on delete Cascade;
+ALTER TABLE hotel_booking ADD CONSTRAINT hotel_booking_room_code_fk FOREIGN KEY (room_code) REFERENCES hotel_room (room_num) on delete Cascade;
+ALTER TABLE hotel_booking ADD CONSTRAINT hotel_booking_mem_code_fk FOREIGN KEY (mem_code) REFERENCES trip_member (mem_num) on delete Cascade;
+ALTER TABLE hotel_review ADD CONSTRAINT hotel_review_hotel_code_fk FOREIGN KEY (hotel_code) REFERENCES hotel (hotel_num) on delete Cascade;
+ALTER TABLE hotel_review ADD CONSTRAINT hotel_review_mem_code_fk FOREIGN KEY (mem_code) REFERENCES trip_member (mem_num) on delete Cascade;
+ALTER TABLE hotel_photo ADD CONSTRAINT hotel_photo_hotel_photo_seq_fk FOREIGN KEY (hotel_photo_seq) REFERENCES hotel_photo_sequence (hotel_photo_seq) on delete Cascade;
+ALTER TABLE hotel_favorate ADD CONSTRAINT hotel_favorate_hotel_code_fk FOREIGN KEY (hotel_code) REFERENCES hotel (hotel_num) on delete Cascade;
+ALTER TABLE hotel_favorate ADD CONSTRAINT hotel_favorate_mem_code_fk FOREIGN KEY (mem_code) REFERENCES trip_member (mem_num) on delete Cascade;
+--------------------------------------------------------------------------------------------------------------------
+CREATE SEQUENCE hotel_num_seq INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE room_num_seq INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE booking_num_seq INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE hotel_photo_seq_seq INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE photo_num_seq INCREMENT BY 1 START WITH 1;
+CREATE SEQUENCE review_num_seq INCREMENT BY 1 START WITH 1;
+------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION HOTEL_PHOTO_FUNC RETURN NUMBER
+IS
+BEGIN
+RETURN photo_num_seq.NEXTVAL;
+END;
+/
+--*************************************************************************************************************************
+-- 전처리한 데이터 바인딩
+create table hotel_data (
+	hotel varchar2(100),
+	addr varchar2(100),
+  star varchar2(10),
+  intro clob,
+  annno clob
+	);
+--*************************************************************************************************************************
+--************************************* 로그인로그 ****************************************************************
+CREATE TABLE myloginlog (
+  loginlog_num     number,
+  loginlog_id     varchar2(30) NOT NULL,
+  loginlog_ip    varchar2(30) NOT NULL,
+  loginlog_uagent  varchar2(120) NOT NULL,
+  loginlog_status  varchar2(120) NOT NULL,
+  loginlog_logtime date DEFAULT sysdate NOT NULL,
+  PRIMARY KEY (loginlog_num));
+ALTER TABLE myloginlog ADD CONSTRAINT myloginlog_loginlog_id_fk FOREIGN KEY (loginlog_id) REFERENCES trip_member (mem_id) on delete Cascade;
+alter table myloginlog modify loginlog_uagent varchar2(255);
+CREATE SEQUENCE myloginlog_seq INCREMENT BY 1 START WITH 1;
