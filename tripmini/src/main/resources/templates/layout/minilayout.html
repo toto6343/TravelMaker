@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="EUC-KR">
+<title>2023 MINI HOMEPAGE</title>
+	<link rel="stylesheet" href="../static/resources/css/font.css" />
+    <link rel="stylesheet" href="../static/resources/css/layout.css" />
+    <link rel="stylesheet" href="../static/resources/css/home.css" />
+    <link rel="stylesheet" href="../static/resources/css/diary.css" />
+    <link rel="stylesheet" href="../static/resources/css/photo.css" />
+    <link rel="stylesheet" href="../static/resources/css/visit.css" />
+    <link rel="stylesheet" href="../static/resources/jquery.timepicker.css"/>
+     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+	<script src="../static/resources/js/ajaxdemo7.js"></script>
+    <script src="https://kit.fontawesome.com/8bcf872b48.js"></script>
+  </head>
+  <body>
+	 
+  <div>
+  	<a href="/trip/">
+      <img style="width: 160px" src="../static/resources/images/logo1.png">
+    </a>
+    <div class="bookcover">
+      <div class="bookdot">
+        <div class="page">
+          <div class="home">
+			   <nav th:replace="~{layout/miniheader :: miniheaderFragment}"></nav>
+			   <div class="home_main">
+				      <div th:replace="~{layout/mininav1 :: mininav1Fragment}"></div>
+				      <div layout:fragment="content"></div>
+				      
+				</div>
+          </div>
+         <div th:replace="~{layout/mininav2 :: mininav2Fragment}"></div> 
+         </div>
+         </div>
+      </div>
+    </div>
+			
+			
+	  </body>
+	</html>

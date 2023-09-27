@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"> 
+<div th:fragment="subnavFragment" 
+	class="l-navbar" id="nav-bar">
+    <nav class="nav">
+        <div>
+            <a href="/trip/" class="nav_logo" style="text-decoration: none;">
+                <!--<span style="color: #fff;">-->
+					<img src="../static/resources/images/logo1.png">
+				<!-- </span>  -->
+            </a>
+            <div class="nav_list">
+                <a href="../reservation/hotel" class="nav_link active">
+                    <span class="nav_name">숙소예약</span>
+                </a>
+                <a href="../diaryrec/maindiarylist" class="nav_link">
+                    <span class="nav_name">다이어리 리스트</span>
+                </a>
+                <a href="../board/boardlist" class="nav_link">
+                    <span class="nav_name">자유게시판</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+</div>
+
+
+
+
+

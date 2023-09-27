@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{layout/minilayout}">
+
+
+						<div class="home_contents" layout:fragment="content">
+						<form method="post" action="mdiaryInsert" autocomplete="off" enctype="multipart/form-data"
+								style="color: black;">
+								<input type="hidden" id="mini_dia_nick" name="mini_dia_nick" th:value=" ${session.sessionNick}">
+								<br>
+								제목 : <input type="text" name="mini_dia_sub"><br><br>
+								내용 : <textarea rows="5" cols="50" name="mini_dia_content" style="display: flex; justify-content: center;">
+								</textarea>
+								사진업로드 : <input type="file" name="mfile" id="mfile">
+								<div class="col-sm-10">
+									<img src="../static/resources/images/noimage.jpg" id="imgx"
+										style="width: 210px; border: 1px dotted; margin: 5px 5px;">
+								</div>
+								<button type="submit">저장</button>
+						</form>
+						</div>
+						
+				<script>
+					function getTextFile() {
+						var input = document.createElement("input");
+						input.type = "file";
+						input.accept = "text/plain"
+						input.onchange = function (event) {
+							processFile(event.target.files[0])
+						};
+						input.click();
+					}
+			
+					function processFile(file) {
+						var reader = new FileReader();
+						reader.readAsText(file, "utf-8");
+			
+						reader.onload = function () {
+							document.getElementById("secret_txt").innerText = reader.result;
+							document.getElementById("hidden").style.display = "block";
+						};
+					}
+				</script>
+
+				<script type="text/javascript">
+					$(function () {
+			
+						$('.bt').click(function () {
+			
+							var formData = $(".testForm").serialize();
+			
+							$.ajax({
+								url: "form",
+								type: "post",
+								data: formData,
+								success: function (data) {
+									$('.result').text(data)
+								},
+								error: function () {
+									alert('ajax error!');
+								}
+							})
+						});
+					})
+				</script>
+			
+				<script>
+					// 이미지 미리보기 함수 => javascript I/O기능을 활용
+					function readURL(input) {
+						// input type = "file"의 주소를 가져온다.
+						if (input.files && input.files[0]) {
+							// 자바스크립트 I/O
+							var reader = new FileReader();
+							// 리스너
+							reader.onload = function (e) {
+								//console.log("이벤트 발생: "+e.target.result); [이미지 제대로 나온거 보고 주석처리함]
+								// <img src> 선택자, attr("속성명", "값") => <img src="">
+								$('#imgx').attr('src', e.target.result); // 이미지를 바이너리로 전달
+							}
+							reader.readAsDataURL(input.files[0]);
+						}
+					}
+					// jQuery 문법 - 축약형 [이 문법형식을 많이 사용함!!!]
+					$(function () {
+						// JQuery 선택자
+						// 대상선택자에서 변화를 감지하는 이벤트 : change()
+						// #mfile : 파일업로드 속성을 선택자
+						// $('선택자')
+						$('#mfile').change(function () {
+							// .val() : input type의 value 속성의 값
+							//console.log($(this).val()); [해당 이미지명이 제대로 출력된거 보고 주석처리함]
+							if ($(this).val().length > 0) {
+								readURL(this);
+							} else {
+								console.log("이미지없음");
+							}
+						})
+					})
+				</script>
+</body>
+
+</html>

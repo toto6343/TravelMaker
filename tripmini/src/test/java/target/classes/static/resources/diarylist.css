@@ -1,0 +1,16 @@
+@charset "utf-8";
+.diary-wrap2 {margin: 30px 0; display: flex; flex-wrap: wrap; justify-content: center;}
+.diarylist-item2 {position: relative; width: 30%; margin: 0 20px 20px 0; height: 450px;}
+.diarylist-item2 img {width: 100%; border-radius: 20px; height: 450px;}
+.item-txt2 {position: absolute; bottom: 0; left: 0; color: #fff; padding: 26px;}
+.item-txt2 h3 {font-style: italic; font-size: 16px; background-color: blueviolet; display: inline-block; margin: 0 0 20px 0; padding: 6px 20px; border-radius: 50px;}
+.item-txt2 p {}
+.item-txt2 span {font-weight: 700;}
+
+
+@media (max-width: 912px) {
+    .diarylist-item {width: 45%;}
+}
+@media (max-width: 553px) {
+    .diarylist-item {width: 100%;}
+}

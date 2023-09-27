@@ -1,0 +1,12 @@
+{"list":[{
+  "id":1,
+  "groupId":null,
+  "title":"Project",
+  "writer":null,
+  "content":null,
+  "start":"2023-09-01T00:00:00",
+  "end":"2023-09-25T00:00:00",
+  "allday":true,"textColor":"yellow",
+  "backgroundColor":"navy",
+  "borderColor":"navy"
+ }]}

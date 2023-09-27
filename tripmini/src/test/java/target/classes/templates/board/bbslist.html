@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/sublayout}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/resources/css/your-styles.css"> <!-- 여기에 필요한 스타일 시트 추가 -->
+    <title>자유게시판</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div style="width: 100%; height: 400px; background: url(../static/resources/images/sub-bg1.jpg); box-sizing: border-box; margin-top: 110px"></div>
+        <form class="content-con board1">
+            <div class="board-top">
+                <h1>자유게시판</h1>
+            <div class="board-content mb30">
+				 <form action="/board/boardlist" method="GET">
+            <select id="searchType" name="searchType">
+                <option value="">검색</option>
+                <option value="1">제목</option>
+                <option value="2">작성자</option>
+                <option value="3">내용</option>
+            </select>
+            <input type="text" id="searchValue" name="searchValue" class="keyword" placeholder="검색어를 입력하세요." title="검색어 입력">
+            <button type="submit" class="search">검색</button>
+        </div>
+        </div>
+        </form>
+
+            <div class="board-tbl mb30">
+            <table>
+                <colgroup>
+                    <col width = "4%">
+                    <col width = "9%">
+                    <col width = "60%">
+                    <col width = "9%">
+                    <col width = "9%">
+                    <col width = "9%">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>번호</th>
+                        <th>제목</th>
+                        <th>작성자</th>
+                        <th>조회수</th>
+                        <th>등록일</th>
+                    </tr>
+                </thead>
+                <tbody>
+               
+	                <tr th:each = "e:${flist}">			
+						<td>
+							<label class="checkbox-inline">
+								<input type="checkbox" class="chk" name="chk" value="">
+							</label>
+						<td th:text="${e.fb_num}">번호
+							
+						</td>
+						<td>
+							<a th:href="@{'/board/boardDetail?num=' + ${e.fb_num}}" th:text="${e.fb_subject}">제목</a>
+						</td>
+							
+						<td th:text="${e.fb_writer}">작성자</td>
+						<td th:text="${e.fb_hit}">조회수</td>
+						<td th:text="${e.fb_date}">등록일</td>
+					</tr>             
+                </tbody>
+            </table>
+        </div>
+            
+<!-- 페이지 링크 표시 (부트스트랩 pagination) -->
+<nav aria-label="...">
+    <ul class="pagination">
+        <li th:class="${page.pageNo == 1} ? 'page-item disabled' : 'page-item'">
+            <a th:href="@{'/board/boardlist?pageNo=1'}" class="page-link">First</a>
+        </li>
+        <li th:class="${page.pageNo == 1} ? 'page-item disabled' : 'page-item'">
+            <a th:href="@{'/board/boardlist?pageNo=' + ${page.pageNo - 1}}" class="page-link">Previous</a>
+        </li>
+        <li th:each="i : ${#numbers.sequence(1, page.totalPage)}" th:class="${page.pageNo == i} ? 'page-item active' : 'page-item'">
+            <a th:href="@{'/board/boardlist?pageNo=' + ${i}}" class="page-link" th:text="${i}"></a>
+        </li>
+        <li th:class="${page.pageNo == page.totalPage} ? 'page-item disabled' : 'page-item'">
+            <a th:href="@{'/board/boardlist?pageNo=' + ${page.pageNo + 1}}" class="page-link">Next</a>
+        </li>
+        <li th:class="${page.pageNo == page.totalPage} ? 'page-item disabled' : 'page-item'">
+            <a th:href="@{'/board/boardlist?pageNo=' + ${page.totalPage}}" class="page-link">Last</a>
+        </li>
+    </ul>
+</nav>
+
+
+            <!-- 로그인 여부에 따른 글쓰기 버튼 표시 -->
+            <div class="board-content mb50" th:if="${session.sessionID == null}">
+                <button class="input-btn" type="button" id="nologin">글쓰기</button>
+            </div>
+            <div class="board-content mb50" th:if="${session.sessionID != null}">
+                <button class="input-btn" type="button" onclick="location='boardwrite'">글쓰기</button>
+            </div>
+        </div>
+        <script>
+		$(function () {
+			$('#nologin').click(function (e) {
+				e.preventDefault();
+				alert('로그인 후 게시물작성 가능합니다.');
+				location = "../tripmember/memForm";
+			});
+		});
+		</script>
+    </div>
+

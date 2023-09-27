@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{layout/sublayout}"
+> 
+
+	<!--Container Main start-->
+	<section class="ftco-section ftco-degree-bg reservation1" layout:fragment="content">
+	<form>
+	<div class="container">
+		<div class="row">
+			<h1>호텔 사업자 등록 신청</h1>
+			<span>간단한 절차를 통해 바로 내 숙박 시설을 판매할 수 있습니다.</span>
+			<br>
+			<br>
+			<br>
+			<div class="col-lg-9">
+				
+				<h2>국내 호텔 기본정보</h2>
+				<br>
+					<h5>사업자명*</h5>
+					<input type="text" id="hotel_owner" name="hotel_owner" placeholder="조조" readonly="readonly">
+					<h5>아이디*</h5>
+					<input type="text" id="hotel_id" name="hotel_id" placeholder="jojo" readonly="readonly">
+					<h5>이메일*</h5>
+					<input type="text" id="hotel_email" name="hotel_email" placeholder="jojo@jojo.com" readonly="readonly">
+					<h5>전화번호*</h5>
+					<input type="text" id="hotel_tel" name="hotel_tel" placeholder="012-3456-7890" readonly="readonly">
+					<br>
+					<br>
+
+					<h4>호텔명*</h4>
+					<input type="text" id="hotel_title" name="hotel_title" value="시그니엘 서울" placeholder="호텔명을 입력하세요.">
+					<br>
+					<br>
+					
+					<h4>호텔 주소*</h4>
+					<p class="rate mb-5">
+						<span class="loc"><i class="icon-map"></i>
+						<input type="text" class="hotel_addr" name="hotel_addr" id="keyword" size="40" placeholder="주소를 적어주세요" value="서울 송파구 올림픽로 300 11번 출구">
+						<button>주소검색</button>
+						</span>
+					</p>
+							
+					<h4>호텔 등급*</h4>
+					<select id="gradeSelect">
+						<option value="1">1성</option>
+						<option value="2">2성</option>
+						<option value="3">3성</option>
+						<option value="4">4성</option>
+						<option value="5">5성</option>
+					</select>
+				    <div id="star-box">
+				        <!-- 별 아이콘이 나타날 공간 -->
+				        <span class="star-icon">
+				        	★
+						</span>
+				    </div>
+					<br>
+					<br>
+					
+					<h4>호텔 사진</h4>
+					<span>숙박시설을 잘 표현할 수 있는 내외관/전경의 대표 이미지부터,부대시설,객실 이미지를 등록합니다.</span>
+					<input type="file" id="recimgfile1" name="recimgfile" multiple="" onclick="imageInput(1)">
+					<div id="preview-container1" class="preview-container">
+					<!-- 사진 추가될 부분 -->
+						<div class="sum-img">
+						<img src="../static/resources/images/noimage.jpg" id="imgx">
+						</div>
+					</div>
+					<br>
+					<br>
+					
+					<h4>호텔 소개</h4>
+					<p class="mb-5">
+					<textarea style="width: 100%; height: 300px; margin-top: 10px; padding: 10px;"
+					name="rec_sc_memo" id="rec_sc_memo" placeholder="국내 최고층 건물인 롯데월드타워 76층~101층에 위치한 시그니엘서울은 한국의 아름다움을 현대적인 감각으로 풀어낸 객실(235실)에서 서울의 파노라믹한 스카이라인과 환상적인 야경을 조망할 수 있으며 일몰과 일출을 한 자리에서 감상할 수 있는 국내 유일의 호텔입니다.<br>
+미식가들을 위한 천국이자 그 자체가 ‘고메 호텔(Gourmet Hotel)’로, 미쉐린 3스타 셰프 ‘야닉 알레노’가 ‘스테이(STAY)’ 레스토랑 운영과 더불어 호텔 내 모든 식음료(Food and Beverage)에 대해 총괄 디렉팅을 전담하여 웨딩에서부터 인룸다이닝 메뉴에 이르기까지 세계적인 스타 셰프가 제안하는 맛과 스타일을 경험할 수 있습니다.<br>
+국내 최고층에 위치하여 햇살 가득한 에메랄드빛 풀에서 도심 속 망중한을 즐길 수 있는 호텔 수영장, 세계 최고층에 위치한 최첨단 시설의 연회장에서는 섬세하고 격조 있는 시그니엘서울만의 서비스가 펼쳐집니다.
+잠실 롯데월드 어드벤처, 월드타워&몰의 서울 스카이 전망대, 아쿠아리움과 인접하여 쇼핑, 관광을 즐기기에 적합합니다."></textarea>
+					</p>
+					<h4>인기시설 및 서비스</h4>
+					<span>호텔 편의시설,편의서비스,테마정보를 설정하면 고객이 상품을 쉽게 찾을 수 있도록 필터로 제공됩니다.</span>
+					<div class="d-md-flex mt-3 mb-3 room-service">
+						<ul>
+							<li>
+								<div>
+								<button>
+									<img src="../static/resources/images/op-icon1.png">
+									<p>스파/월풀/욕조</p>
+								</button>
+								</div>
+							</li>
+							<li>
+								<div>
+								<button>
+									<img src="../static/resources/images/op-icon2.png">
+									<p>주차가능</p>
+								</button>
+								</div>
+							</li>
+							<li>
+								<div>
+								<button>
+									<img src="../static/resources/images/op-icon3.png">
+									<p>수영장</p>
+								</button>
+								</div>
+							</li>
+							<li>
+								<div>
+								<button>
+									<img src="../static/resources/images/op-icon4.png">
+									<p>조식운영</p>
+								</button>
+								</div>
+							</li>
+							<li>
+								<div>
+								<button>
+									<img src="../static/resources/images/op-icon5.png">
+									<p>와이파이</p>
+								</button>
+								</div>
+							</li>
+							<li>
+								<div>
+								<button>
+									<img src="../static/resources/images/op-icon8.png">
+									<p>레스토랑</p>
+								</button>
+								</div>
+							</li>
+						</ul>
+					</div>
+					
+					<h4>호텔 이용 가이드</h4>
+					<span>시설에 추가로 표기하고자 하는 품목 및 시설이 있을 경우 이용 가이드를 기재해주세요.</span>
+					<p class="mb-5">
+					<textarea style="width: 100%; height: 600px; margin-top: 10px; padding: 10px;"
+					name="rec_sc_memo" id="rec_sc_memo" placeholder="이용안내
+조식 정보
+이용 장소: 81 STAY/li>
+이용 시간: 06:30 ~ 10:00
+이용 금액: 성인(13세 이상) 68,000원 / 소아(4~12세) 45,000원 / 유아(1~3세) 무료
+뷔페 제공
+조식 이용객이 많을 경우, 호텔 사정에 따라 조식 장소가 변경될 수 있습니다.
+부대시설 정보
+부대시설: 모던 레스토랑 스테이, 한식당 비채나, 멤버스 레스토랑 시그니엘 클럽, 바81, 더 라운지, 연회장, 사우나, 살롱 드 시그니엘 (게스트 라운지), 헬스장 (투숙객 무료), 실내 수영장 (투숙객 무료)
+헬스장: 85층 / 투숙객 무료 / 06:00 ~ 22:00 / 개별 운동화 지참
+실내수영장: 85층 / 투숙객 무료 / 06:00 ~ 22:00
+사우나: 85층 / 유료 / 06:00 ~ 22:00
+6/1부 사우나 유료화 변경 (투숙객 전용 요금: 입장 1회당 44,000원)
+수영장 (만 12세 이하 단독 입장 제한됩니다.)
+사우나 & 피트니스 (만 17세 이하 입장 제한됩니다.)
+살롱 드 시그니엘 (만 12세 이하 입장 제한됩니다.)
+▶ 정기 휴관일
+※ 피트니스, 수영장, 사우나 정기 휴관일은 매월 마지막 주 수요일입니다."></textarea>
+						</p>
+						
+					</div>
+				<div class="sumi-btn">
+				<button type="submit">등록</button>
+				<button type="button">취소</button>
+				</div>
+				
+			</div> <!-- .col-md-8 -->
+		</div>
+	</form>
+	<script src="../static/resources/js/hotelRegistForm.js"></script>
+	</section>
+	<!-- .section -->
+	

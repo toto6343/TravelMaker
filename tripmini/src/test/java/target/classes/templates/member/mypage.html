@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{layout/sublayout}">
+ 
+ <!-- 프로필 -->
+<div class="myprofile content-con" layout:fragment="content">
+        <div class="top-background-div"></div>
+        <div class="top-myprofile" >
+            <div class="profilePhoto">
+                <img th:src="${vo.mem_mypic }" onerror="this.src='../static/resources/images/mypic.png'"/>
+            </div><br>
+        <div class="text">[[${vo.mem_nick }]]</div><br>
+        <!--button class="btn-normal" onclick="goToMyPage()">프로필 수정</button-->
+        <a th:href="@{'/tripmember/myprofile?id=' + ${session.sessionID}}" class="nav-link">회원정보</a>
+    </div>
+	<div class="user_box">
+		<ul>
+			<li><a th:href="@{/diaryrec/recordeform}">여행 기록 작성하기</a></li>
+			<li><a th:href="@{/diaryrec/recdiaryList}">기록다이어리 리스트</a></li>
+			<li><a th:href="@{/diaryplan/planform}">여행 계획 작성하기</a></li>
+			<!--/*<li><a th:href="@{/diaryplan/plandiaryList}">계획다이어리 리스트</a></li>*/-->
+			<li><a th:href="@{/mini/mini_diarylist}">미니 다이어리</a></li>
+			<li><a th:href="@{/reservation/hotelRegist}">호텔 사업자 등록</a></li>
+		</ul>
+	</div>
+    <!-- 나의 계획 -->
+    <div class="myprofile uk-container-large" id="mypageData">
+        <div class="section-title-container">
+            <h1 class="section-title">나의 계획</h1>
+        </div>
+        <div class="scd-wrap">
+            <div class="scd-wrap-lf">
+                <div class="scd-wrap-img">
+                    <img src="../static/resources/images/mr-1.jpg" alt="">
+                    <span>D-83</span>
+                </div>
+                <div class="scd-wrap-area">
+                    <p>GANGNEUNG</p>
+                    <p>대한민국 강릉</p>
+                    <p>tjdeorud6531@naver.com</p>
+                    <span>L</span>
+                </div>
+            </div>
+            <div class="scd-wrap-rt">
+                <div class="scd-wrap-day">
+                    <div class="day-name">
+                        	여행이름
+                        <div class="day-name-c">
+                            <input class="" type="text" placeholder="여행이름" id="inputTravelName_idx_0" value="">
+                        </div>
+                    </div>
+                    <div class="day-name">
+                        	최종수정
+                        <span class="day-name-c">2023.7.12</span>
+                    </div>
+                </div>
+                <div class="scd-wrap-day">
+                    <div class="day-name">
+                        여행일자
+                        <span class="day-name-c">2023.10.3-2023.10.7</span>
+                    </div>
+                    <div class="day-name">
+                        선택장소
+                        <span class="day-name-c">28</span>
+                    </div>
+                </div>
+                <div class="scd-wrap-btn">
+                    <ul>
+                        <li><a href="">일정 수정</a></li>
+                        <li><a href="">일정표</a></li>
+                        <li><a href="">일정 공유</a></li>
+                        <li><a href="">삭제</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 나의 기록 -->
+    <div class="container-record" id="mypageData">
+        <h1 class="section-title">나의 기록</h1>
+        <div class="middle_record">
+            <div class="recode1">
+                <div class="recode_img">
+                    <img src="../static/resources/images/mp-1.webp" alt="">
+                            <h2><a th:href="@{/diary/recwrite}">Jeju</a></h2>
+                            <h3>대한민국</h3>
+                </div>
+            </div>
+            <div class="recode2">
+                <div class="recode_img">
+                    <img src="../static/resources/images/mp-2.jpg" alt="">
+                        <h2>Jeonju</h2>
+                        <h3>대한민국</h3>
+                </div>
+            </div>
+            <div class="recode3">
+                <div class="recode_img">
+                    <img src="../static/resources/images/mp-3.jpg" alt="">
+                       <h2>Incheon</h2>
+                        <h3>대한민국</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 준비물 -->
+    <div class="material">
+        <div class="ma_note">
+            <h1>메모장</h1>
+        </div>
+            <div>
+                <textarea class="mtext" placeholder="내용을 입력해 주세요."></textarea>
+                <button id="submit">Create Checkbox</button>
+            </div>
+    </div>
+</div>
+	
+	<!-- <p><a href="<%=application.getContextPath()%>/diary/diaryList">다이어리 리스트</a></p>  -->
+
+</body>
+</html>

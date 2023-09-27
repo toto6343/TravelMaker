@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"> 
+<header th:fragment="subheaderFragment"
+	class="header" id="header">
+    <div class="header_toggle">
+        <i class='bx bx-menu' id="header-toggle"></i>
+    </div>
+    <div>
+		<!--/* 로그인 전 */-->
+		<a th:if="${session.sessionID == null}" href="../tripmember/memForm">
+	        <span class="nav_name">로그인 / 회원가입</span>
+		</a>
+		
+		<!--/* 로그인 후 */-->
+		<th:block th:unless="${session.sessionID == null}">
+			<a th:href="@{'../tripmember/mypage?id=' + ${session.sessionID}}">
+				<span class="nav_name" style="color: mediumvioletred; font-weight: bolder;">[[${session.sessionNick}]]</span>의 Page
+			</a>
+	  		<a href="../tripmember/loginOut" style="margin-left: 20px;">
+	        	<span class="nav_name">로그아웃</span>
+			</a>
+		</th:block>
+	</div>      
+    <!--div class="header_img">
+        <a href="#">마이페이지</a>
+        <a href="#">마이페이지</a>
+    </div-->
+</header> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/sublayout}">
+<div layout:fragment="content">
+	<div style="width: 100%; height: 400px; background: url(../static/resources/images/sub-bg1.jpg); box-sizing: border-box; margin-top: 110px">
+    </div>
+	<section class="ftco-section ftco-degree-bg" style="margin-top: 30px;">
+		<div class="container" role="main">
+			<form method="post" action="fbUpdate">
+	    <input type="hidden" name="fb_num" th:value="${vo.fb_num}">
+	    <input type="hidden" name="fb_reip" th:value="${vo.fb_reip}">
+	    <div class="row mb-3">
+	        <label for="subject">제목</label>
+	        <input type="text" name="fb_subject" class="form-control" id="subject" th:value="${vo.fb_subject}">
+	    </div>
+	    <div class="row mb-3">
+	        <label for="fb_writer">작성자</label>
+	        <input type="text" name="fb_writer" class="form-control" id="writer" th:value="${vo.fb_writer}">
+	    </div>
+	    <div class="row">
+	        <label for="boardContent">내용</label>
+	        <textarea class="form-control" rows="5" name="fb_content" id="content" th:text="${vo.fb_content}"></textarea>
+	    </div>			
+	    <div class="container text-center" role="group" style="margin-top: 30px;">
+	        <button class="btn btn-primary" type="submit">글작성</button>
+	        <a class="btn btn-danger" th:href="@{/boardlist}">리스트</a>
+	    </div>
+	</form>
+	
+		</div>
+	</section>
+</div>

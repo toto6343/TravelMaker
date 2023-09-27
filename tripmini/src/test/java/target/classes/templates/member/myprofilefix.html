@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{layout/sublayout}">
+
+ 
+ <!-- 프로필-->
+<div class="myprofile content-con" layout:fragment="content">
+        <div class="top-background-div"></div>
+        <div class="top-myprofile" >
+            <div class="profilePhoto">
+                <img th:src="${vo.mem_mypic }" onerror="this.src='../static/resources/images/mypic.png'"/>
+            </div><br>
+            
+        <div class="text" >[[${vo.mem_nick }]]</div><br>
+    	</div>
+    <!--기본정보-->
+    <div class="pfile_fix">
+        <div class="pfile_fix_imp">
+            <div class="py-4">
+                <div class="pfile_fix_imp_set">
+                    <h5 style="margin-bottom: 8px"><b>회원정보</b></h5>
+                </div>
+                <div class="pfile_fix_data">
+                    <h1>이름</h1>
+                    <p><input type="text" id="userName" th:value="${vo.mem_name }"></p>
+                </div>
+                <div class="pfile_fix_data">
+                    <h1>닉네임</h1>
+                    <p><input type="text" id="userNickName" th:value="${vo.mem_nick }"></p>
+                </div>
+                <div class="pfile_fix_data">
+                   <h1>비밀번호</h1>
+                    <p><input autocomplete="false" type="password" id="password1" th:value="${vo.mem_pwd }"></p>
+                    <!-- <b id="userEmailArea"></b> -->
+                </div>
+                <div class="pfile_fix_data">
+                    <h1>비밀번호 확인</h1>
+                    <p><input autocomplete="false" type="password" id="password2" th:value="${vo.mem_pwd }"><input type="button" onclick="test()" value="중복확인"></p>
+                    <!-- <b id="userEmailArea"></b> -->
+                </div>
+                <div class="pfile_fix_data">
+                    <h1>이메일</h1>
+                     <p><input type="email" id="userEmailArea" th:value="${vo.mem_email }"></p>
+                    <!-- <b id="userEmailArea"></b> -->
+                </div>
+                <div class="pfile_fix_data">
+                    <h1>등급</h1>
+                    <p><input type="text" id="usergrade" th:value="${vo.mem_grade }"></p>
+                    <!-- <b id="userEmailArea"></b> -->
+                </div>
+               <div class="pfile_fix_data">
+                    <h1>가입일</h1>
+                    <p>[[${vo.mem_date }]]</p>
+                    <!-- <b id="userEmailArea"></b> -->
+                </div>
+            </div>
+            <span id="resultAreaForPwd"></span>
+                        <!-- <div class="py-4">
+            <div class="section-title-container">
+                <h6><b>비밀번호</b></h6>
+            </div>
+            <div class="data">
+                <label>비밀번호</label>
+                <input type="password" id="userPwd" required />
+                <button id="confirmUserPwd">비밀번호 확인</button>
+            </div>
+            <div class="data">
+                <label>새 비밀번호</label>
+                <input type="password" id="newPassword" required />
+            </div>
+            <div class="data">
+                <label>새 비밀번호 확인</label>
+                <input type="password" id="newPasswordConfirm" required />
+            </div>
+            <span id="differentPassMsg"></span>
+        </div> -->
+            <!--회원탈퇴-->
+            <div class="pfile_fix_out">
+                <a class="pfile_fix_out_quit" id="deleteUserBtn">회원탈퇴</a>
+            </div>
+            <div class="pfile_fix_out">
+            	<a class="pfile_fix_out_normal" th:href="@{'/tripmember/mypage?id=' + ${session.sessionID}}">취소</a>
+            	<a class="pfile_fix_out_normal" thLhref="@{'/tripmember/myprofilefix?id=' + ${session.sessionID}}">확인</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function test() {
+      var p1 = document.getElementById('password1').value;
+      var p2 = document.getElementById('password2').value;
+      if(p1.length < 6) {
+              alert('입력한 글자가 6글자 이상이어야 합니다.');
+              return false;
+          }
+          if( p1 != p2 ) {
+            alert("비밀번호불일치");
+            return false;
+          } else{
+            alert("비밀번호가 일치합니다");
+            return true;
+          }
+    }
+ </script>

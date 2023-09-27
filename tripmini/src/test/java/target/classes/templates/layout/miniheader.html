@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+ <nav th:fragment="miniheaderFragment"
+	 class="navbar navbar-expand-lg navbar-dark ftco_navbar ftco-navbar-light" 
+	 id="ftco-navbar">
+    <div class="upside">
+		
+            <br><strong>&emsp;&emsp;&emsp;TODAY <span style="color:coral;">28</span> | TOTAL 234918</strong> 
+            &emsp;&emsp;&emsp; &emsp; 
+            <span class="title titleModBox" id="title">[[${detail.mini_home_title}]]</span>
+            <span id="titlemodBtn">
+            <input class="input-btn" type="button" value="수정" id="modComm" th:onclick="@{'modTitle('+${detail.mini_home_num}+')'}">                   
+            </span>
+            <audio id="audioPlayer" autoplay controls loop style="float: right;">
+      		<source src="../static/resources/audio/freestyle.mp3" type="audio/mp3">
+    	    </audio>
+			<div class="comment-wrap commtarget mb30 "><!-- 제목이 들어갈 박스 --></div>
+    </div>
+    
+ <script>       
+	//편집 함수
+	function modTitle(mini_home_num) {
+	    // AJAX 요청을 보냅니다.
+	    $.ajax({
+	        type: "GET",
+	        url: '/trip/miniajax/modTitle?num='+mini_home_num,
+	        dataType: "json",
+	        contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+	        success: function (response) {
+                const modCommBtn = document.getElementById("modComm");
+                modCommBtn.remove();
+	        	//alert('편집 함수 작동 성공');
+	            // AJAX 요청이 성공적으로 완료되었을 때 실행되는 콜백 함수입니다.
+	            // 서버에서 댓글 정보를 가져온 결과를 response로 받습니다.
+	            if (response.success) {
+	        		//alert('편집 함수 작동 성공2');
+	                // 댓글 정보를 가져왔으니 수정하는 팝업이나 모달창 등을 띄워서 사용자가 수정할 수 있도록 구현합니다.
+	                var comment = response.comment;
+	                console.log(comment.mini_home_title);
+	                // 예시: 댓글 수정 팝업을 띄우고, 댓글 내용을 입력받는 폼에 comment 변수의 값을 설정합니다.
+	                // 그리고 수정 버튼을 클릭했을 때, 아래와 같이 서버로 수정된 댓글을 보내서 DB에 저장합니다.
+	                // submitModifiedComment(comment);
+
+	                var comment_html = "<span class=\"comment-li-item1\"  id=\"modComm\">";
+	                comment_html += "<input id=\"mod_mini_title\" name=\"dia_comm_cont\" class=\"dia_comm_cont\" value=\""+comment.mini_home_title+"\">";
+	                comment_html += "<button id=\"upComm\" class=\"input-btn\" onclick=\"upTitle("+mini_home_num+")\">수정완료</button></span>";
+	                $(".titleModBox").html(comment_html);
+	            } else {
+	                alert("댓글 정보를 가져오는데 실패했습니다.");
+	            }
+	        },
+	        error: function () {
+	            // AJAX 요청이 실패했을 때 실행되는 콜백 함수입니다.
+	            alert("서버와의 통신에 실패했습니다.");
+	        }
+	    });
+	};	 
+	 
+	function upTitle(num) {
+		const mini_home_title = $('#mod_mini_title').val();
+		console.log(num + '번 댓글 업데이트');
+		console.log('수정내용:' + mini_home_title)
+		// AJAX 요청을 보냅니다.
+		  $.ajax({
+		    type: "PUT", // HTTP 요청 메서드를 PUT로 선택합니다.
+		    url: '/trip/miniajax/upMiniTitle?num='+ num, // 업데이트를 처리하는 서버의 엔드포인트 URL을 넣어주세요.
+		    dataType: "json", // JSON 형식으로 응답 처리
+		    contentType: "application/json", // Content-Type을 JSON 형식으로 설정
+		    data: JSON.stringify({ 
+		    	mini_home_num : num,
+		    	mini_home_title : mini_home_title,
+		    }), // 업데이트할 데이터를 서버에 전달합니다.
+		    success: function(response) {
+		      // AJAX 요청이 성공적으로 완료되었을 때 실행되는 콜백 함수입니다.
+		      // 서버에서 성공 여부를 확인하는 응답을 받아 처리합니다.
+		      if (response.success) {
+		        // 업데이트가 성공했을 때, 필요한 동작을 수행합니다.
+		        //alert("댓글이 업데이트되었습니다.");
+		        title(num);
+		        // 추가적인 작업을 수행하거나 페이지를 새로 고침하거나 다른 동작을 수행할 수 있습니다.
+		      } else {
+		        // 업데이트가 실패했을 때, 필요한 동작을 수행합니다.
+		        alert("댓글 업데이트에 실패했습니다.");
+		        // 추가적으로 필요한 작업을 수행하세요.
+		      }
+		    },
+		    error: function() {
+		      // AJAX 요청이 실패했을 때 실행되는 콜백 함수입니다.
+		      alert("서버와의 통신에 실패했습니다.");
+		    }
+		  });
+			};	 
+	function title(num) {
+		const mini_home_title = $('#mod_mini_title').val();
+		const mini_home_num = $('#mini_home_num').val();
+        var title_html = mini_home_title
+        var titleBtn_html = "<input class=\"input-btn\" type=\"button\" value=\"수정\" id=\"modComm\" onclick=\"modTitle("+num+")\">";
+        $(".titleModBox").html(title_html);
+        $("#titlemodBtn").html(titleBtn_html);
+	};
+
+        
+
+        
+    </script>
+    
+</nav>

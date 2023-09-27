@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{layout/sublayout}">
+<div layout:fragment="content">
+	<div style="width: 100%; height: 400px; background: url(../static/resources/images/sub-bg1.jpg); box-sizing: border-box; margin-top: 110px">
+    </div>
+	<section class="ftco-section ftco-degree-bg" style="margin-top: 30px;">
+	    <div class="container" role="main">
+	        <form method="post" action="fboardInsert" autocomplete="off"
+	              enctype="multipart/form-data">
+	            <input type="hidden" name="fb_reip" value="${fb_reip}">
+	            <div class="mb-3">
+	                <label for="boardTitle">제목</label>
+	                <input type="text" class="form-control" id="subject" name="fb_subject"
+	                       placeholder="제목을 입력해 주세요">
+	            </div>
+	            <br>
+	            <div class="mb-3">
+	                <label for="reg_id">작성자</label>
+	                <input type="text" name="fb_writer" class="form-control" id="fb_writer"
+	                       th:value="${session.sessionNick}" readonly="readonly">
+	            </div>
+	            <br>
+	            <div class="mb-3">
+	                <label for="boardContent">내용</label>
+	                <textarea class="form-control" rows="5" id="content"
+	                          name="fb_content" placeholder="내용을 입력해 주세요"></textarea>
+	            </div>
+	            <div class="mb-3">
+	                <label for="mfile">사진업로드</label>
+	                <input type="file" name="mfile" class="form-control" id="mfile">
+		            <div class="col-sm-10">
+		                <img th:src="@{/static/resources/images/noimage.jpg}" id="imgx"
+		                     style="width: 210px; border: 1px dotted; margin: 5px 5px;">
+		            </div>
+	            </div>
+	            <br> <br>
+	            <div class="container text-center" role="group">
+	                <input type="submit" value="글작성" class="btn btn-primary">
+	                <input type="button" value="리스트" class="btn btn-danger" onclick="location='boardlist'">
+	            </div>
+	        </form>
+	    </div>
+	    <script th:inline="javascript">
+	        /* <![CDATA[ */
+	        // 이미지 미리보기 함수 => javascript I/O기능을 활용
+	        function readURL(input) {
+	            if (input.files && input.files[0]) {
+	                var reader = new FileReader();
+	                reader.onload = function (e) {
+	                    $('#imgx').attr('src', e.target.result);
+	                }
+	                reader.readAsDataURL(input.files[0]);
+	            }
+	        }
+	        $(function () {
+	            $('#mfile').change(function () {
+	                if ($(this).val().length > 0) {
+	                    readURL(this);
+	                } else {
+	                    console.log("이미지없음");
+	                }
+	            })
+	        })
+	        /* ]]> */
+	    </script>
+	</section>
+</div>

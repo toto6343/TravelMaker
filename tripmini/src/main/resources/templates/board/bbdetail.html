@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/sublayout}">
+
+<div layout:fragment="content">
+	<div style="width: 100%; height: 400px; background: url(../static/resources/images/sub-bg1.jpg); box-sizing: border-box; margin-top: 110px">
+    </div>     
+	<article>
+	    <div class="container">
+	        <div style="padding: 20px 10px;">
+	            <div style="margin-left: 10px">
+	                <p>
+	                    <span>번호 :</span> <span th:text="${detail.fb_num}"></span>
+	                </p>
+	                <p style="font-size: 20px; font-weight: bold; margin: 0" th:text="${detail.fb_subject}"></p>
+	                <p style="border-bottom: 1px solid #bcbcbc; padding-bottom: 10px;"><span>작성자 :</span> <span th:text="${detail.fb_writer}"></span></p>
+	                <p th:text="${detail.fb_content}"></p>
+	            </div>
+	            <img th:src="'../static/resources/imgfile/'+${detail.fb_file}" alt="Image" style="width: 400px; margin-bottom: 20px; height: 50%;">
+	            <p style="border: 1px solid #bcbcbc; padding: 10px 10px"><span>등록날짜 :</span> <span th:text="${detail.fb_date}"></span></p>
+	            <p style="border: 1px solid #bcbcbc; padding: 10px 10px"><span>수정날짜 :</span> <span th:text="${detail.fb_update}"></span></p>
+	        </div>
+	        <div class="board-content mb50">
+	            <div>
+	                <th:block th:if="${session.sessionNick == detail.fb_writer}">
+	                    <input class="input-btn" id="delbutton" type="button" value="삭제">
+						<button class="input-btn" th:onclick="'location.href=\'fbmod?num=' + ${detail.fb_num} + '\''">수정</button>
+						<button class="input-btn btn-danger" type="button" th:onclick="location='boardlist'">리스트</button>
+	                    
+	                </th:block>
+	                <th:block th:unless="${session.sessionNick == detail.fb_writer}">
+						<button class="input-btn btn-danger" type="button" th:onclick="location='boardlist'">리스트</button>
+	                </th:block>
+	            </div>
+	        </div>
+	        
+	        <div class="comment-wrap mb30">
+	            <form action="fCommInsert" method="post" enctype="multipart/form-data" id="bcominsert">
+	                <div class="comment-txt">
+	                    <h3>댓글쓰기</h3>
+	                    <!--<input type="hidden" id="reip" name="fbc_reip" th:value="${#httpServletRequest.remoteAddr}">-->
+	                    <input type="hidden" id="ucode" name="fbc_ucode" th:value="${detail.fb_num}">
+	                    <div class="form-group">
+	                        <label for="uwriter">작성자</label>
+	                        <input type="text" class="form-control" id="uwriter" th:value="${session.sessionNick}" readonly="readonly" name="fbc_uwriter"
+	                               maxlength="20" required="required" pattern=".{4,100}">
+	                    </div>
+	                    <div class="con-txt">
+	                        <textarea id="fbc_ucontent" name="fbc_ucontent" placeholder="내용"></textarea>
+	                        <div th:switch="${session.sessionNick}">
+	                            <button th:if="${session.sessionNick != null}" id="sendComm" type="submit" class="input-btn">댓글쓰기</button>
+	                            <button th:unless="${session.sessionNick != null}" id="nologincomm" type="button" class="input-btn">댓글쓰기</button>
+	                        </div>
+	                    </div>
+	                </div>
+			        <div class="comment-li">
+			            <table>
+			                <colgroup>
+			                    <col width="80%">
+			                    <col width="20%">
+			                </colgroup>
+			                <tr th:each="c : ${listComm}">
+			                    <td>
+			                        <p class="comment-li-item1">[[${c.fbc_uwriter}]]</p>
+			                        <p class="comment-li-item2">[[${c.fbc_ucontent}]]</p>
+			                        <p class="comment-li-item3">[[${c.fbc_uregdate}]]</p>
+			                    </td>
+			                    <td th:if="${session.sessionNick == c.fbc_uwriter}">
+			                        <input class="input-btn" id="delbuttoncomm" type="button"
+			                               th:onclick="'location=fbcdelete?num=' + ${c.fbc_num}" value="삭제">
+			                        <button class="input-btn" th:onclick="'location=fbcupdate?num=' + ${c.fbc_num}">수정</button>
+			                    </td>
+			                </tr>
+			            </table>
+			        </div>	                
+	            </form>
+	        </div>
+	    </div>
+	</article>
+    <script>
+		$(function(){
+			$('#nologincomm').click(function(e) {
+				e.preventDefault();
+				alert('로그인 후 댓글작성 가능합니다.');
+			});
+		});
+		document.getElementById("sendComm").addEventListener("click", function(event) {
+			var ucontent = document.getElementById("fbc_ucontent").value;
+			if (ucontent.trim() === "") {
+				alert("댓글 내용을 입력해주세요.");
+				event.preventDefault();
+			}
+		});	            
+		
+		
+        $(function() {
+            $('#delbutton').click(function(e) {
+                console.log("삭제");
+                e.preventDefault();
+                if (confirm("삭제하시겠습니까?")) {
+                    location.href = 'fbdel?num='+[[${detail.fb_num}]];
+                }
+            });
+        });
+    </script>
+</div>

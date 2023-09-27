@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{layout/minilayout}">
+
+              <div class="home_contents" style="width: 200px;" layout:fragment="content">
+			        <div class="profile_3">
+						<a href="mphotoform">사진첩 작성</a>
+					</div>
+					
+			        <div class="photo"> 
+			            <div th:each="c : ${lists}">
+							<div class="photo_contents" style="color: black;">
+							<div>
+							<div th:text="${c.mini_pho_date}" class="photo_title"></div>
+			                <div th:text="${c.mini_pho_nick}" class="photo_title"></div>
+			                <div th:text="${c.mini_pho_sub}" class="photo_title"></div>
+			                <div th:text="${c.mini_pho_content}" class="photo_title"></div>
+			                </div>
+			                <img th:src="@{'../static/resources/imgfile/'+${c.mini_pho_file}}" alt="Image" style="width: 50%; height: 50%">
+			               </div>
+			            </div>
+			        </div>
+				</div>

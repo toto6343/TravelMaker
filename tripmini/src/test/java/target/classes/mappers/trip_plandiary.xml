@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.trip.mvc.dao.TripPlanDiaryDao">
+	<!-- ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ다이어리 입력ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ -->
+	<!-- 다이어리 -->
+	<insert id="diaryadd" parameterType="divo">
+	<!-- DIA_NUM,DIA_NICK,DIA_SUB,DIA_SUMM,DIA_START,DIA_END,DIA_THUMBNAIL -->
+		INSERT INTO TRIP_DIARY VALUES (TRIP_DIARY_SEQ.NEXTVAL, #{dia_nick},#{dia_sub},#{dia_summ},#{dia_start},#{dia_end},#{dia_thumbnail},0,0,0)
+	</insert>
+	 
+	<!-- ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ다이어리 계획 입력ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ -->
+	
+	<!-- 다이어리  계획 해시태그 -->
+	<insert id="planHashTagadd" parameterType="java.util.List">
+		<selectKey keyProperty="plan_hash_code" resultType="int" order="BEFORE">
+			select Trip_Diary_seq.currVal from dual
+		</selectKey>
+		<foreach collection="list" item="e" separator=" "
+			open="insert all" close="select * from dual">
+			INTO plan_hashtag VALUES(plan_hash_FUNC,#{plan_hash_code},'#'||#{e.plan_hash_tag})
+		</foreach>
+	</insert>
+	
+	<!-- 다이어리 계획 스케줄 -->
+	<!-- PLAN_SC_NUM,PLAN_SC_CODE,PLAN_SC_LOCA,PLAN_SC_TIME,PLAN_SC_ADDR,PLAN_SC_TYPE,PLAN_SC_COST,PLAN_SC_MEMO -->
+	<insert id="planScadd" parameterType="java.util.List">
+		<selectKey keyProperty="plan_sc_code" resultType="int" order="BEFORE">
+			select Trip_Diary_seq.currVal from dual
+		</selectKey>
+		<foreach collection="list" item="e" separator=" "
+			open="insert all" close="select * from dual">
+			into plan_schedule values(Plan_SCHEDULE_FUNC,#{plan_sc_code},#{e.plan_sc_loca},#{e.plan_sc_time},#{e.plan_sc_addr},#{e.plan_sc_type},#{e.plan_sc_cost},#{e.plan_sc_memo})
+		</foreach>
+	</insert>
+	
+	<!-- 다이어리 계획 준비물 -->
+	<!-- PLAN_MTR_NUM,PLAN_MTR_CODE,PLAN_MTR_CLASS,PLAN_MTR_MATERIAL,PLAN_MTR_CHECK -->
+	<insert id="planMtradd" parameterType="java.util.List">
+		<selectKey keyProperty="plan_mtr_code" resultType="int" order="BEFORE">
+			select plan_schedule_seq.currVal from dual
+		</selectKey>
+		<foreach collection="list" item="e" separator=" "
+			open="insert all" close="select * from dual">
+			into plan_material values(plan_material_FUNC,#{plan_mtr_code},#{e.plan_mtr_class})
+		</foreach>
+	</insert>
+	
+	<!-- 다이어리 계획 세부준비물-->
+	<!-- PLAN_MTR_NUM,PLAN_MTR_CODE,PLAN_MTR_CLASS,PLAN_MTR_MATERIAL,PLAN_MTR_CHECK -->
+	<insert id="planMtrInfoadd" parameterType="java.util.List">
+		<selectKey keyProperty="plan_mtrlist_code" resultType="int" order="BEFORE">
+			select plan_material_seq.currVal from dual
+		</selectKey>
+		<foreach collection="list" item="e" separator=" "
+			open="insert all" close="select * from dual">
+			into plan_materiallist values(plan_materiallist_FUNC,#{plan_mtrlist_code},#{e.plan_mtr_material},0)
+		</foreach>
+	</insert>
+	
+	<!-- 다이어리  계획 사진 -->
+	<insert id="planPhotoadd" parameterType="java.util.List">
+		<selectKey keyProperty="plan_photo_code" resultType="int" order="BEFORE">
+			select Trip_Diary_seq.currVal from dual
+		</selectKey>
+		<foreach collection="list" item="e" separator=" "
+			open="insert all" close="select * from dual">
+			into plan_photo values(plan_PHOTO_FUNC,#{plan_photo_code},#{e.plan_photo_title})
+		</foreach>
+	</insert>
+
+	<!-- ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ다이어리 계획 리스트ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ -->
+	<!-- SELECT DIA_NUM, DIA_THUMBNAIL, DIA_SUB, dia_nick, DIA_SUMM, plan_hash_tag FROM TRIP_DIARY, plan_hashtag WHERE dia_num = PLAN_HASH_CODE and dia_num=15 ORDER BY plan_hash_num ASC; -->
+	<!-- 다이어리와 해시태그 기록 resultMap -->
+	<!-- 이부분 수정 중이였음!! -->
+	<resultMap type="phtvo" id="planHashList">
+		<id property="plan_hash_num" column="plan_hash_num" javaType="int" />
+		<result property="plan_hash_code" column="plan_hash_code" javaType="int" />   
+		<result property="plan_hash_tag" column="plan_hash_tag"/>
+	</resultMap>	
+		
+	<resultMap type="divo" id="planDiaryListView">
+	   <id property="dia_num" column="dia_num" javaType="int" />
+	   <result property="dia_nick" column="dia_nick" />
+	   <result property="dia_sub" column="dia_sub" />
+	   <result property="dia_summ" column="dia_summ" />
+	   <result property="dia_thumbnail" column="dia_thumbnail"/>
+	   <result property="dia_hit" column="dia_hit" javaType="int"/>
+	   <result property="dia_like" column="dia_like" javaType="int"/>
+	   <result property="dia_star" column="dia_star" javaType="int"/>
+	   <collection property="planvolist" javaType="java.util.List" 
+	   		resultMap="planHashList" ofType="phtvo">
+	   </collection>
+	</resultMap>
+	
+	<select id="planDiaryList" resultMap="planDiaryListView">
+		SELECT DIA_NUM, DIA_THUMBNAIL, DIA_SUB, dia_nick, DIA_SUMM, plan_hash_tag FROM TRIP_DIARY, plan_hashtag 
+			WHERE dia_num = PLAN_HASH_CODE
+			ORDER BY plan_hash_num ASC
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

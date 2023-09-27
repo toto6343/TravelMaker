@@ -1,0 +1,5 @@
+.photo_contents{margin: 10px; border: 1px solid silver;}
+.photo_title{margin: 10px; height: 25px; font-size: 14px; font-weight:700; line-height: 35px; }
+.photo_title_date{font-size: 10px; color: steelblue;}
+.photo{ position: absolute; top: 80px; bottom: 15px; left: 5px; right: 5px; overflow: auto;}
+.photo_text{color: black; text-align: center;  line-height: 25px;  font-size: 18px; font-family: 'Gamja Flower', cursive; margin-top: 20px;  margin-bottom: 20px;}

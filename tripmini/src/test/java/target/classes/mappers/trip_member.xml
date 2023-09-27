@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="kr.co.trip.mvc.dao.TripMemberDao">
+ 	<insert id="add" parameterType="tmvo">
+ 	INSERT INTO trip_member VALUES (trip_member_seq.NEXTVAL,#{mem_id},#{mem_nick},#{mem_name},#{mem_email},#{mem_pwd},#{mem_ip},SYSDATE,'Normal','NoPic')
+	</insert>
+	<select id="idCheck" parameterType="String" resultType="int">
+	SELECT COUNT(*) cnt FROM trip_member WHERE mem_id=#{mem_id}
+	</select>
+	 
+	<select id="mypage" parameterType="String" resultType="tmvo">
+		select MEM_ID,MEM_NICK,MEM_NAME,MEM_EMAIL,MEM_PWD,MEM_IP,MEM_DATE,MEM_GRADE,MEM_NUM from trip_member where MEM_ID=#{mem_id}
+	</select>
+ 	
+	<select id="emailCheck" parameterType="String" resultType="int">
+	SELECT COUNT(*) cnt FROM trip_member WHERE mem_email=#{mem_email}
+	</select>
+	
+	<select id="nickCheck" parameterType="String" resultType="int">
+	SELECT COUNT(*) cnt FROM trip_member WHERE mem_nick=#{mem_nick}
+	</select>
+ 	
+ 	<!-- loginCheck -->
+	<select id="loginchk" parameterType="tmvo" resultType="tmvo">
+		select mem_id, mem_name, mem_nick from trip_member where mem_id=#{mem_id} and mem_pwd=#{mem_pwd}
+	</select>
+	
+	<!-- page start -->
+ 	<!-- 리스트 -->
+	<select id="listBack" resultType="tmvo" parameterType="map">
+		SELECT MEM_NUM,MEM_ID,MEM_NICK,MEM_NAME,MEM_EMAIL,MEM_PWD,MEM_IP,MEM_GRADE,MEM_DATE FROM(
+		SELECT ROWNUM r_num, a.* FROM(
+		SELECT MEM_NUM,MEM_ID,MEM_NICK,MEM_NAME,MEM_EMAIL,MEM_PWD,MEM_IP,MEM_GRADE,MEM_DATE from trip_member
+		ORDER BY 1 DESC
+		)a
+		) WHERE r_num BETWEEN #{begin} AND #{end}
+	</select>
+	
+	<select id="totalCountBack" resultType="int">
+		select count(*) cnt from trip_member
+	</select>
+ 	<!-- page end -->
+ 	
+ 	 	<!-- page Search start -->
+ 	<!-- 리스트 -->
+	<select id="list" resultType="tmvo" parameterType="map">
+		SELECT MEM_NUM,
+			<choose>
+				<when test="searchValue != null and searchType != null">
+					<choose>
+						<when test="searchType == 1">
+							<![CDATA[replace(MEM_ID,#{searchValue},'<span class="searchCls">${searchValue}</span>') MEM_ID,MEM_NICK,MEM_EMAIL,]]>
+						</when>
+						<when test="searchType == 2">
+							<![CDATA[MEM_ID,replace(MEM_NICK,#{searchValue},'<span class="searchCls">${searchValue}</span>') MEM_NICK,MEM_EMAIL,]]>
+						</when>
+						<when test="searchType == 3">
+							<![CDATA[MEM_ID,MEM_NICK,replace(MEM_EMAIL,#{searchValue},'<span class="searchCls">${searchValue}</span>') MEM_EMAIL,]]>
+						</when>
+						<otherwise>
+							MEM_ID,MEM_NICK,MEM_EMAIL,
+						</otherwise>
+					</choose>
+				</when>
+				<otherwise>
+					MEM_ID,MEM_NICK,MEM_EMAIL,
+				</otherwise>
+			</choose>
+		MEM_NAME,MEM_PWD,MEM_IP,MEM_GRADE,MEM_DATE FROM(
+			SELECT ROWNUM r_num, a.* FROM(
+				SELECT MEM_NUM,MEM_ID,MEM_NICK,MEM_NAME,MEM_EMAIL,MEM_PWD,MEM_IP,MEM_GRADE,MEM_DATE from trip_member
+				
+				<!-- Dynamic Query -->
+				<if test="searchValue != null and searchType != null">
+					<where>
+						<choose>
+							<when test="searchType == 1"> MEM_ID like '%'||#{searchValue}||'%'</when>
+							<when test="searchType == 2">MEM_NICK like '%'||#{searchValue}||'%'</when>
+							<when test="searchType == 3">MEM_EMAIL like '%'||#{searchValue}||'%'</when>
+						</choose>
+					</where>
+				</if>
+				ORDER BY 1 DESC
+			)a
+		) WHERE r_num BETWEEN #{begin} AND #{end}
+	</select>
+	
+	<select id="totalCount" resultType="int" parameterType="map">
+		select count(*) cnt from trip_member
+			<if test="searchValue != null and searchType != null">
+				<where>
+					<choose>
+						<when test="searchType == 1">MEM_ID like '%'||#{searchValue}||'%'</when>
+						<when test="searchType == 2">MEM_NICK like '%'||#{searchValue}||'%'</when>
+						<when test="searchType == 3">MEM_EMAIL like '%'||#{searchValue}||'%'</when>
+					</choose>
+				</where>
+			</if>
+	</select>
+ 	<!-- page Search  end -->
+ 	
+ </mapper>

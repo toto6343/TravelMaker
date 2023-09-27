@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="kr.co.trip.mvc.dao.Mini_DiaryDao">
+ 
+ <!-- 미니홈피 추가 -->
+ <insert id="minihompyadd" parameterType="minihvo">
+ INSERT INTO mini_home VALUES(mini_home_seq.nextval, #{mini_home_title}, #{mini_home_content}, #{mini_home_thumbnail}, #{mini_home_host},SYSDATE)
+ </insert>
+ 
+ 
+ <!-- 미니홈피 리스트 불러오기 -->
+ <select id="minihomelist" resultType="minihvo" parameterType="map">
+ 	SELECT mini_home_num, mini_home_title, mini_home_content, mini_home_thumbnail, mini_home_host,mini_home_date FROM mini_home WHERE mini_home_host = #{mini_home_host}
+ </select>
+ 
+ 
+  <select id="minihomedetail" resultType="minihvo" parameterType="int">
+ 	SELECT mini_home_num, mini_home_title, mini_home_content, mini_home_thumbnail, mini_home_host,mini_home_date FROM mini_home WHERE mini_home_num = #{mini_home_num}
+ </select>
+ 
+ 
+ <!-- 미니홈페이지 -->
+  <insert id="homeadd" parameterType="mhvo">
+ INSERT INTO mini_home VALUES(mini_home_seq.nextval, #{mini_home_title}, #{mini_home_content}, #{mini_home_thumbnail}, #{mini_home_host}, SYSDATE)
+ </insert>
+ 
+ <!-- 업데이트문
+	<select id="modDiaComm" parameterType="map" resultType="dcvo">
+	    SELECT DIA_COMM_NUM, DIA_COMM_CODE, DIA_COMM_NICK, DIA_COMM_CONT, DIA_COMM_DATE, DIA_COMM_IP,dia_comm_update
+	    FROM dia_comm
+	    WHERE dia_comm_num = #{dia_comm_num}
+	    AND dia_comm_code = #{dia_comm_code}
+	</select> 
+	<update id="upDiaComm" parameterType="dcvo">
+		UPDATE dia_comm
+			set dia_comm_cont=#{dia_comm_cont}, dia_comm_update=SYSDATE, dia_comm_ip=#{dia_comm_ip} WHERE dia_comm_num=#{dia_comm_num}
+	</update>
+ -->
+ 
+ 	<!-- 타이틀 업데이트 문 -->
+	<select id="modhometitle" parameterType="map" resultType="minihvo">
+	    SELECT mini_home_title, mini_home_num FROM mini_home WHERE mini_home_num = #{mini_home_num}
+	</select> 
+	<update id="updatehometitle" parameterType="minihvo">
+		UPDATE mini_home SET mini_home_title = #{mini_home_title} WHERE mini_home_num = #{mini_home_num}
+	</update>
+	<select id="selecttitle" resultType="minihvo" parameterType="int">
+		SELECT mini_home_num, mini_home_title FROM mini_home WHERE mini_home_num = #{mini_home_num}
+	</select>
+	
+  	<!-- 인사말 업데이트 문 -->
+  	 <select id="modhomecontent" parameterType="map" resultType="minihvo">
+  	 	SELECT mini_home_content, mini_home_num FROM mini_home WHERE mini_home_num = #{mini_home_num}
+  	 </select>
+	<update id="updatehomecontent" parameterType="minihvo">
+		UPDATE mini_home SET mini_home_content = #{mini_home_content} WHERE mini_home_num = #{mini_home_num}
+	</update>
+	<select id="selectcontent" resultType="minihvo" parameterType="int">
+		SELECT mini_home_num, mini_home_content FROM mini_home WHERE mini_home_num = #{mini_home_num}
+	</select>
+	
+ 	<!-- 썸네일 -->
+	<select id="modhomethumbnail" parameterType="map" resultType="minihvo">
+		SELECT mini_home_thumbnail, mini_home_num FROM mini_home WHERE mini_home_num = #{mini_home_num}
+	</select>	
+	<update id="updatehomethumbnail" parameterType="minihvo">
+		UPDATE mini_home SET mini_home_thumbnail = #{mini_home_thumbnail} WHERE mini_home_num = #{mini_home_num}
+	</update>
+	<select id="selecthomehumbnail" resultType="minihvo" parameterType="int">
+		SELECT mini_home_num, mini_home_thumbnail FROM mini_home WHERE mini_home_num = #{mini_home_num}
+	</select>
+	
+	
+	<!-- 캘린더 -->
+<resultMap id="calendarRM" type="mcvo">
+    <id property="mini_cal_no" column="mini_cal_no" />
+    <result property="mini_cal_title" column="mini_cal_title" />
+    <result property="mini_cal_memo" column="mini_cal_memo" />
+    <result property="mini_cal_start" column="mini_cal_start" />
+    <result property="mini_cal_end" column="mini_cal_end" />
+    <result property="mini_cal_code" column="mini_cal_code" />
+  </resultMap>
+	
+	<select id="calendarList" resultMap="calendarRM" parameterType="int">
+		select * from mini_cal where mini_cal_code = #{mini_cal_code}
+	</select>
+	
+	<insert id="calendaradd" parameterType="mcvo">
+    insert into mini_cal values (mini_cal_no_seq.nextval, #{mini_cal_title}, #{mini_cal_memo}, #{mini_cal_start}, #{mini_cal_end}, #{mini_cal_code})
+  </insert>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+

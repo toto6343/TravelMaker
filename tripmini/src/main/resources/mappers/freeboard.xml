@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.trip.mvc.dao.FreeBoardDao">
+
+    <select id="flistback" resultType="fbvo">
+        SELECT FB_NUM, FB_SUBJECT, FB_WRITER, FB_HIT, FB_DATE, fb_file FROM freeboard ORDER BY FB_NUM DESC
+    </select>
+    
+    <select id="getPagelist" parameterType="map" resultType="fbvo">
+        SELECT * FROM (
+        	SELECT rownum AS R, T.* FROM
+        	 (SELECT * FROM freeboard order by fb_num desc) T)
+        where R between #{startNo} and #{endNo}
+    </select>
+    
+    <select id="getCount" resultType="int">
+    select count(*) from freeboard
+    </select>
+    
+    <select id="finfo" parameterType="int" resultType="fbvo">
+        SELECT FB_NUM, FB_SUBJECT, FB_WRITER, FB_CONTENT, FB_HIT, FB_REIP, FB_DATE, fb_update, fb_file
+        FROM freeboard WHERE FB_NUM=#{FB_NUM}
+    </select>
+    
+    <update id="hit" parameterType="int">
+        UPDATE freeboard SET FB_HIT = FB_HIT+1
+        WHERE FB_NUM=#{FB_NUM}
+    </update>
+    
+    <insert id="fwrite" parameterType="fbvo">
+        INSERT INTO freeboard (FB_NUM, FB_SUBJECT, FB_WRITER, FB_CONTENT, FB_HIT, FB_REIP, FB_DATE, fb_update, fb_file)
+        VALUES (freeboard_seq.NEXTVAL, #{fb_subject}, #{fb_writer}, #{fb_content}, #{fb_hit}, #{fb_reip}, sysdate, sysdate, #{fb_file})
+    </insert>
+    
+    <delete id="del" parameterType="int">
+        DELETE FROM freeboard WHERE FB_NUM=#{fb_num}
+    </delete>
+    
+    <select id="chkpwd" parameterType="fbvo" resultType="int">
+        SELECT COUNT(*) FROM freeboard WHERE FB_NUM = #{fb_num}
+    </select>
+    
+    <update id="up" parameterType="fbvo">
+        UPDATE freeboard SET FB_SUBJECT=#{fb_subject}, FB_WRITER=#{fb_writer}, FB_CONTENT=#{fb_content}, 
+        FB_REIP=#{fb_reip}, fb_update=sysdate WHERE FB_NUM=#{fb_num}
+    </update>
+    
+    <select id="flist" resultType="fbvo" parameterType="map"> 
+        SELECT FB_NUM, 
+            <choose>
+                <when test="searchValue != null and searchType != null">
+                    <choose>
+                        <when test="searchType == 1">
+                            <![CDATA[replace(FB_WRITER, #{searchValue}, '<span class="searchCls">${searchValue}</span>') FB_WRITER, FB_SUBJECT,]]>
+                        </when>
+                        <when test="searchType == 2">
+                            <![CDATA[FB_WRITER, replace(FB_SUBJECT, #{searchValue}, '<span class="searchCls">${searchValue}</span>') FB_SUBJECT,]]>
+                        </when>
+                        <when test="searchType == 3">FB_WRITER, FB_SUBJECT,</when>
+                        <otherwise>
+                            FB_WRITER, FB_SUBJECT,
+                        </otherwise>
+                    </choose>
+                </when>
+                <otherwise>
+                    FB_WRITER, FB_SUBJECT,
+                </otherwise>
+            </choose>
+        FB_HIT, FB_DATE, fb_update FROM (
+            SELECT ROWNUM r_num, a.* FROM (
+                SELECT FB_NUM, FB_SUBJECT, FB_WRITER, FB_HIT, FB_DATE, fb_update FROM freeboard
+                <!-- Dynamic Query -->
+                <if test="searchValue != null and searchType != null">
+                    <where>
+                        <choose>
+                            <when test="searchType == 1">FB_WRITER like '%'||#{searchValue}||'%'</when>
+                            <when test="searchType == 2">FB_SUBJECT like '%'||#{searchValue}||'%'</when>
+                            <when test="searchType == 3">FB_CONTENT like '%'||#{searchValue}||'%'</when>
+                        </choose>
+                    </where>
+                </if>
+                ORDER BY FB_NUM DESC
+            ) a
+        ) WHERE r_num BETWEEN #{begin} AND #{end}
+    </select> 
+    
+    <select id="totalCount" resultType="int" parameterType="map">
+        SELECT COUNT(*) cnt FROM freeboard
+        <if test="searchValue != null and searchType != null">
+            <where>
+                <choose>
+                    <when test="searchType == 1">FB_WRITER like '%'||#{searchValue}||'%'</when>
+                    <when test="searchType == 2">FB_SUBJECT like '%'||#{searchValue}||'%'</when>
+                    <when test="searchType == 3">FB_CONTENT like '%'||#{searchValue}||'%'</when>
+                </choose>
+            </where>
+        </if>
+    </select>
+    
+    <!-- page Search  end -->
+    
+    <!-- 댓글 -->
+    <insert id="addComm" parameterType="fbcommvo">
+        INSERT INTO freeboard_comm (FBC_NUM, FBC_UCODE, FBC_UWRITER, FBC_UCONTENT, FBC_REIP, FBC_UREGDATE)
+        VALUES (FREEBOARD_COMM_SEQ.NEXTVAL, #{fbc_ucode}, #{fbc_uwriter}, #{fbc_ucontent}, #{fbc_reip}, SYSDATE)
+    </insert>
+    
+    <select id="commList" parameterType="int" resultType="fbcommvo">
+        SELECT FBC_NUM, FBC_UCODE, FBC_UWRITER, FBC_UCONTENT, FBC_REIP, FBC_UREGDATE
+        FROM freeboard_comm WHERE fbc_ucode = #{fbc_ucode} ORDER BY FBC_NUM DESC
+    </select>
+    
+    <delete id="delComm" parameterType="int">
+        DELETE FROM freeboard_comm WHERE FBC_NUM=#{fbc_num}
+    </delete>
+    
+    <update id="upComm" parameterType="int">
+        <!-- FBC_UWRITER, FBC_UCONTENT, FBC_REIP, FBC_UREGDATE -->
+        UPDATE FREEBOARD_COMM
+        SET FBC_UCONTENT=#{fbc_ucontent}, FBC_UREGDATE=SYSDATE, FBC_REIP=#{fbc_reip} WHERE FBC_NUM=#{fbc_num}
+    </update>
+    
+    <select id="findAll" resultType="fbvo">
+    select * from freeboard
+    </select>
+</mapper>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{layout/sublayout}">
+
+<div layout:fragment="content">
+
+    
+    <div class="top-background-div"></div>
+        <div class="top-myprofile" >
+            <div class="profilePhoto">
+                <img src="../static/resources/images/mypic.png"/>
+            </div><br>
+        
+            <!--/*
+        <div class="text">[[${vo.mem_nick}]]</div><br>
+			*/-->        
+        
+        <!--button class="btn-normal" onclick="goToMyPage()">프로필 수정</button-->
+        <a th:href="@{'/tripmember/myprofile?id=' + ${session.sessionID}}" class="nav-link">회원정보</a>
+    </div>
+    
+    
+    
+    <div class="content-con board1">
+        <div class="board-top">
+            <h1>♥미니다이어리 리스트♥</h1>
+        </div>
+        
+        <div class="board-tbl mb30">
+            <table>
+                <colgroup>
+                    <col width = "4%">
+                    <col width = "9%">
+                    <col width = "60%">
+                    <col width = "9%">
+                    <col width = "9%">
+                    <col width = "9%">
+                </colgroup>
+                
+                
+                <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>썸네일</th>
+                        <th>제목</th>
+                        <th>인사말</th>
+                        <th>생성자</th>
+                        <th>등록일</th>
+                    </tr>
+                </thead>
+                <tbody>               
+	                <tr th:each = "c:${mlist}">		
+						<td>[[${c.mini_home_num}]]</td>
+						<td><img th:src="@{'../static/resources/imgfile/'+${c.mini_home_thumbnail}}" style="width: 100%;"></td>	
+						<td><a th:href="@{'minidiaryDetail?num=' + ${c.mini_home_num}}">[[${c.mini_home_title}]]</a></td>
+						<td>[[${c.mini_home_content}]]</td>
+						<td>[[${c.mini_home_host}]]</td>
+						<td>[[${c.mini_home_date}]]</td>
+					</tr>   
+                </tbody>
+            </table>
+        </div>
+		<!--/* page처리 inculde */-->
+		<br>
+		
+		<div class="board-content mb50" th:if="${session.sessionID == null}">
+			<button class="input-btn" type="button" id="nologin">글쓰기</button>
+		</div>
+		
+		<div class="board-content mb50" th:if="${session.sessionID != null}">
+			<button class="input-btn" type="button" onclick="location='mini_diary_add'">홈피추가</button>
+		</div>
+		
+	    <script>
+		$(function () {
+			$('#nologin').click(function (e) {
+				e.preventDefault();
+				alert('로그인 후 게시물작성 가능합니다.');
+				location = "../tripmember/memForm";
+			});
+		});
+		</script>	
+    </div>
+</div> 

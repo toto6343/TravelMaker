@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{layout/sublayout}">
+<!--Container Main start-->
+    <div class="content-con detail1" style="margin-top: 120px;" layout:fragment="content">
+        <div class="detail-wrap">
+            <div class="lft-content" style="z-index: 9999;">
+                <h1>TRAVEL</h1>
+                <h1>BOOKSTORE</h1>
+                <h1>MUSEUM</h1>
+                <h1>ALL</h1>
+                <p>[[${session.sessionNick}]]의</p>
+                <p>여러 지역의 이야기를</p>
+                <p>확인해보세요</p>
+            </div>
+            <div class="rit-content">
+            	<!-- 반복문 시작 -->
+            	<!--/*
+            	<c:forEach var="e" items="${listv }">
+                <div class="rit-content-item">
+                    <a href="detailDiary?num=${e.dia_num }">
+                    <img src="$../static/resources/imgfile/${e.dia_thumbnail }" alt=""></a>
+                    <div class="item-txt">
+					<input type="hidden" id="dia_num" value="${e.dia_num }">
+					<h3>${e.dia_sub }</h3>
+					<h6>${e.dia_nick }</h6>
+					<p>${e.dia_summ}</p>
+					<c:forEach var="e1" items="${taglist }">
+					<c:set var="hashtag" value="${e1.rec_hash_code }"/>
+						<c:if test="${e.dia_num eq hashtag }" >
+						<span>${e1.rec_hash_tag }</span>
+						</c:if>
+					</c:forEach>
+			</div>
+                </div>
+                </c:forEach>
+                */-->
+                <!-- 반복문 끝 -->
+                <!-- 반복문 시작 -->
+                <div class="rit-content-item" th:each="e:${diaRecList}">
+                    <a th:href="@{'detailDiary?num='+${e.dia_num }}">
+                    <img th:src="@{'../static/resources/imgfile/'+${e.dia_thumbnail}}" alt="">
+                    <div class="item-txt">
+						<input type="hidden" id="dia_num" th:value="${e.dia_num }">
+						<h3>[[${e.dia_sub }]]</h3>
+						<h6>[[${e.dia_nick }]]</h6>
+						<p>[[${e.dia_summ}]]</p>
+					</div>
+					<span th:each="e1:${taglist}" th:if="${e.dia_num eq e1.rec_hash_code}">
+						[[${e1.rec_hash_tag }]]
+					</span>
+                    </a>
+                </div>
+                <!-- 반복문 끝 -->
+                <div class="rit-content-item">
+                    <a href="#">
+                        <img src="../static/resources/images/detail_img11.gif" alt="">
+                    </a>
+                </div>
+                <div class="rit-content-item">
+                    <a href="#">
+                        <img src="../static/resources/images/detail_img10.gif" alt="">
+                    </a>
+                </div>
+                <div class="rit-content-item">
+                    <a href="#">
+                        <img src="../static/resources/images/detail_img12.jpg" alt="">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="board-content mb50">
+			<button class="input-btn" type="button" onclick="location='recordeform'">글쓰기</button>
+		</div>
+    </div>

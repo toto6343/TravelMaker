@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.trip.mvc.dao.Trip_DiaryDao">
+	<!-- 다이어리 -->
+	<insert id="addTripDiary" parameterType="divo">
+	<!-- DIA_NUM,DIA_NICK,DIA_SUB,DIA_SUMM,DIA_START,DIA_END,DIA_THUMBNAIL -->
+		INSERT INTO TRIP_DIARY VALUES (TRIP_DIARY_SEQ.NEXTVAL, #{dia_nick},#{dia_sub},#{dia_summ},#{dia_start},#{dia_end},#{dia_thumbnail},0,0,0)
+	</insert>
+	 
+	<!-- 다이어리 기록 스케줄 -->
+	<!-- DIA_REC_NUM,DIA_REC_CODE,DIA_REC_NDAY -->
+	<insert id="addRecSc" parameterType="java.util.List">
+		<selectKey keyProperty="rec_sc_code" resultType="int" order="BEFORE">
+			select Trip_Diary_seq.currVal from dual
+		</selectKey>
+		<foreach collection="list" item="e" separator=" "
+			open="insert all" close="select * from dual">
+			into rec_schedule values(REC_SCHEDULE_FUNC,#{rec_sc_code},#{e.rec_sc_nday},#{e.rec_sc_loca},#{e.rec_sc_time},#{e.rec_sc_addr},#{e.rec_sc_type},#{e.rec_sc_cost},#{e.rec_sc_memo})
+		</foreach>
+	</insert>
+	
+	<!-- 다이어리 레코드 사진 -->
+	<insert id="addRecPhoto" parameterType="java.util.List">
+		<selectKey keyProperty="rec_photo_code" resultType="int" order="BEFORE">
+			select Trip_Diary_seq.currVal from dual
+		</selectKey>
+		<foreach collection="list" item="e" separator=" "
+			open="insert all" close="select * from dual">
+			into rec_photo values(REC_PHOTO_FUNC,#{rec_photo_code},#{e.rec_photo_title},#{e.rec_photo_nday})
+		</foreach>
+	</insert>
+	
+	<!-- 다이어리 레코드 해시태그 -->
+	<insert id="addRecHash" parameterType="java.util.List">
+		<selectKey keyProperty="rec_hash_code" resultType="int" order="BEFORE">
+			select Trip_Diary_seq.currVal from dual
+		</selectKey>
+		<foreach collection="list" item="e" separator=" "
+			open="insert all" close="select * from dual">
+			INTO rec_hashtag VALUES(rec_hash_FUNC,#{rec_hash_code},'#'||#{e.rec_hash_tag})
+		</foreach>
+	</insert>
+	
+	<!-- 다이어리 nday 인서트 -->
+	<insert id="addRecNday" parameterType="java.util.List">
+		<selectKey keyProperty="rec_nday_code" resultType="int" order="BEFORE">
+			select Trip_Diary_seq.currVal from dual
+		</selectKey>
+		<foreach collection="list" item="e" separator=" "
+		open="insert all" close="select * from dual">
+		INTO rec_nday VALUES(rec_nday_FUNC, #{rec_nday_code}, #{e.rec_nday_nday})
+		</foreach>
+	</insert>
+	
+	
+	
+	<select id="diaryRecList" resultType="divo" parameterType="map">
+	<!-- DIA_NUM,DIA_NICK,DIA_SUB,DIA_SUMM,DIA_START,DIA_END,DIA_THUMBNAIL,DIA_HIT,DIA_LIKE,DIA_STAR
+	SELECT DIA_THUMBNAIL, DIA_SUB,dia_nick, DIA_SUMM, rec_hash_tag FROM TRIP_DIARY, DIA_RECORD , rec_hashtag WHERE dia_num=dia_rec_code and dia_num=4 -->
+		SELECT DIA_NUM,
+			<choose>
+				<when test="searchValue != null and searchType != null">
+					<choose>
+						<when test="searchType == 1">
+							<![CDATA[replace(DIA_NICK #{searchValue},'<span class="searchCls">${searchValue}</span>') DIA_NICK,DIA_SUB,DIA_SUMM,]]>
+						</when>
+						<when test="searchType == 2">
+							<![CDATA[DIA_NICK,replace(DIA_SUB,#{searchValue},'<span class="searchCls">${searchValue}</span>') DIA_SUB, DIA_SUMM,]]>
+						</when>
+						<when test="searchType == 3">
+							<![CDATA[DIA_NICK,DIA_SUB,replace(DIA_SUMM,#{searchValue},'<span class="searchCls">${searchValue}</span>') DIA_SUMM,]]>
+						</when>
+						<otherwise>
+							DIA_NICK,DIA_SUB,DIA_SUMM,
+						</otherwise>
+					</choose>
+				</when>
+				<otherwise>
+					DIA_NICK,DIA_SUB,DIA_SUMM,
+				</otherwise>
+			</choose>
+			DIA_START,DIA_END,DIA_THUMBNAIL,DIA_HIT,DIA_LIKE,DIA_STAR
+			FROM(
+			SELECT ROWNUM r_num, a.* FROM(
+				SELECT DIA_NUM,DIA_NICK,DIA_SUB,DIA_SUMM,DIA_START,DIA_END,DIA_THUMBNAIL,DIA_HIT,DIA_LIKE,DIA_STAR FROM TRIP_DIARY
+				<!-- Dynamic Query -->
+				<if test="searchValue != null and searchType != null">
+					<where>
+						<choose>
+							<when test="searchType == 1">DIA_NICK like '%'||#{searchValue}||'%'</when>
+							<when test="searchType == 2">DIA_SUB like '%'||#{searchValue}||'%'</when>
+							<when test="searchType == 3">DIA_SUMM like '%'||#{searchValue}||'%'</when>
+						</choose>
+					</where>
+				</if>
+				where dia_nick=#{dia_nick}
+				ORDER BY 1 DESC
+			)a
+		) WHERE r_num BETWEEN #{begin} AND #{end}
+	</select>
+	
+	<select id="getTotal" resultType="int" parameterType="map">
+	<!-- DIA_NUM,DIA_NICK,DIA_SUB,DIA_SUMM,DIA_START,DIA_END,DIA_THUMBNAIL -->
+		select count(*) cnt from TRIP_DIARY
+			<if test="searchValue != null and searchType != null">
+				<where>
+					<choose>
+						<when test="searchType == 1">DIA_NICK like '%'||#{searchValue}||'%'</when>
+						<when test="searchType == 2">DIA_SUB like '%'||#{searchValue}||'%'</when>
+						<when test="searchType == 3">DIA_SUMM like '%'||#{searchValue}||'%'</when>
+					</choose>
+				</where>
+			</if>
+	</select>
+ 	<!-- page Search  end -->
+ 	
+ 	
+ 	<!-- 해시태그 -->
+ 	<select id="hashtagRecList" resultType="htvo" parameterType="map">
+ 	SELECT Dia_num,REC_HASH_NUM,REC_HASH_CODE,REC_HASH_TAG
+	FROM REC_HASHTAG, TRIP_DIARY
+	WHERE rec_hash_code=dia_num
+ 	</select>
+	
+	
+	<!-- 댓글
+	<insert id="coadd" parameterType="covo">
+	INSERT INTO diary_comm VALUES
+	 	(dia_comm_num_seq.NEXTVAL,#{dia_code},#{dia_comm_nick},#{dia_comm_cont},SYSDATE,#{dia_comm_ip})
+	</insert>-->
+	
+	
+	<!-- ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ다이어리 디테일ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ -->
+	<!-- 다이어리와 다이어리 기록 resultMap -->
+	<resultMap type="divo" id="diaryRecview">
+		<id property="dia_num" column="dia_num" javaType="int" />
+		<result property="dia_nick" column="dia_nick" />
+		<result property="dia_sub" column="dia_sub" />
+		<result property="dia_summ" column="dia_summ" />
+		<result property="dia_start" column="dia_start" />
+		<result property="dia_end" column="dia_end" />
+		<result property="dia_thumbnail" column="dia_thumbnail"/>
+		<result property="dia_hit" column="dia_hit" javaType="int"/>
+		<result property="dia_like" column="dia_like" javaType="int"/>
+		<result property="dia_star" column="dia_star" javaType="int"/>
+		<collection property="rscvolist" javaType="java.util.List" ofType="rsvo">
+			<id property="rec_sc_num" column="rec_sc_num" javaType="int" />
+			<result property="rec_sc_code" column="rec_sc_code" javaType="int" />	
+			<result property="rec_sc_nday" column="rec_sc_nday" javaType="int" />
+			<result property="rec_sc_loca" column="rec_sc_loca"/>
+			<result property="rec_sc_time" column="rec_sc_time"/>
+			<result property="rec_sc_addr" column="rec_sc_addr"/>
+			<result property="rec_sc_type" column="rec_sc_type"/>
+			<result property="rec_sc_cost" column="rec_sc_cost" javaType="int"/>
+			<result property="rec_sc_memo" column="rec_sc_memo"/>
+		</collection>
+	</resultMap>
+	
+	
+	
+	<!-- 다이어리 리스트 -->
+	<select id="recDetail" resultMap="diaryRecview" parameterType="int">
+		SELECT DIA_NUM,DIA_NICK,DIA_SUB,DIA_SUMM,DIA_START,DIA_END,DIA_THUMBNAIL,DIA_HIT,DIA_LIKE,DIA_STAR,
+		REC_SC_NUM,REC_SC_CODE,REC_SC_NDAY,REC_SC_LOCA,REC_SC_TIME,REC_SC_ADDR,REC_SC_TYPE,REC_SC_COST,REC_SC_MEMO
+		FROM TRIP_DIARY, REC_SCHEDULE
+		WHERE dia_num = rec_sc_code AND
+		dia_num=#{dia_num}
+		ORDER BY REC_SC_NUM ASC
+	</select>
+	
+	<!-- 기록 사진 리스트 -->
+	<select id="photoList" resultType="rphvo" parameterType="int">
+		SELECT
+		rec_photo_num,rec_photo_code,rec_photo_title,rec_photo_nday
+		FROM
+		REC_PHOTO,TRIP_DIARY
+		WHERE 
+		rec_photo_code=dia_num AND
+		dia_num=#{dia_num}
+		ORDER BY 1 ASC
+	</select>
+	
+	<!-- 기록 n일차 리스트 -->
+	<select id="ndayList" resultType="rndayvo" parameterType="int">
+		SELECT
+		REC_NDAY_NUM,REC_NDAY_CODE,REC_NDAY_NDAY
+		FROM Trip_Diary, rec_nday
+		WHERE dia_num = rec_nday_code AND
+		DIA_NUM=#{dia_num}
+		ORDER BY 1 ASC
+	</select>
+	
+	
+	<!-- ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ다이어리 댓글 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ -->
+	<!-- DIA_COMM_NUM,DIA_COMM_CODE,DIA_COMM_NICK,DIA_COMM_CONT,DIA_COMM_DATE,DIA_COMM_IP -->
+	<insert id="adddiaComm" parameterType="dcvo">
+		insert into dia_comm values(dia_comm_seq.nextval,#{dia_comm_code},#{dia_comm_nick},#{dia_comm_cont},sysdate,#{dia_comm_ip},sysdate)
+	</insert>
+	
+	<select id="diaCommList" parameterType="map" resultType="dcvo">
+		SELECT DIA_COMM_NUM,DIA_COMM_CODE,DIA_COMM_NICK,DIA_COMM_CONT,DIA_COMM_DATE,DIA_COMM_IP
+		FROM (
+		SELECT ROWNUM r_num, a.* FROM(
+		SELECT DIA_COMM_NUM,DIA_COMM_CODE,DIA_COMM_NICK,DIA_COMM_CONT,DIA_COMM_DATE,DIA_COMM_IP
+		FROM DIA_COMM
+		WHERE dia_comm_code = #{dia_comm_code}
+		ORDER BY 1 DESC
+		)a
+		) WHERE r_num BETWEEN #{begin} AND #{end}
+ 	</select>
+ 	
+ 	<select id="diaCommTotal" parameterType="int" resultType="int">
+		select count(*) cnt from dia_comm where dia_comm_code = #{dia_comm_code}
+	</select>
+	
+	<select id="modDiaComm" parameterType="map" resultType="dcvo">
+    SELECT DIA_COMM_NUM, DIA_COMM_CODE, DIA_COMM_NICK, DIA_COMM_CONT, DIA_COMM_DATE, DIA_COMM_IP,dia_comm_update
+    FROM dia_comm
+    WHERE dia_comm_num = #{dia_comm_num}
+    AND dia_comm_code = #{dia_comm_code}
+	</select>
+	
+	<delete id="delDiaComm" parameterType="int">
+ 	DELETE FROM dia_comm WHERE dia_comm_num=#{dia_comm_num}
+ 	</delete>
+	
+	<update id="upDiaComm" parameterType="dcvo">
+	<!-- FBC_UWRITER,FBC_UCONTENT,FBC_REIP,FBC_UREGDATE -->
+		UPDATE dia_comm
+			set dia_comm_cont=#{dia_comm_cont}, dia_comm_update=SYSDATE, dia_comm_ip=#{dia_comm_ip} WHERE dia_comm_num=#{dia_comm_num}
+	</update>
+	
+	
+</mapper>

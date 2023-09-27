@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{layout/sublayout}"
+> 
+<article class="article-wrapper" layout:fragment="content">
+  <h1>리스트</h1>
+  <article class="day-forecast">
+    <h2>기본정보</h2>
+
+  </article>
+  <article class="day-forecast">
+    <h2>객실정보</h2>
+
+  </article>
+  <article class="day-forecast">
+    <h2>요금/수량</h2>
+
+  </article>
+
+  <!--Container Main start-->
+  <h1>객실 등록하기</h1>
+  <button type="submit"> + 객실추가하기</button>
+  <div class="content-con board1">
+    <div class="board-top">
+      <h3>추가된 객실</h3>
+    </div>
+    <div class="board-content mb30">
+      <select id="searchType" name="searchType">
+        <option value="">검색</option>
+        <option value="1">제목</option>
+        <option value="2">작성자</option>
+      </select>
+      <input type="text" id="searchValue" name="searchValue" class="keyword" placeholder="검색어를 입력하세요." title="검색어 입력">
+      <button type="submit" class="search">검색</button>
+    </div>
+    <div class="board-tbl mb30">
+
+      <table>
+      	<thead>
+	        <tr>
+	        </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <label class="checkbox-inline">
+                <input type="checkbox" class="chk" name="chk" value="">
+              </label>
+            <td>
+              <a href="roomDetail">스탠다드 트윈룸 도시전망</a>
+            </td>
+          <tr>
+            <td>기준인원 2명</td>
+            <td>최대인원 2명</td>
+            <td>객실면적(평):33.0m(10.0평)</td>
+          <tr>
+          <tr>
+              <td colspan="3"> <span>시설 : 욕조 에어컨 객실연결가능 </span></td>
+          </tr>
+          <tr>
+            <td>
+              <label class="checkbox-inline">
+                <input type="checkbox" class="chk" name="chk" value="">
+              </label>
+            <td>
+              <a href="roomDetail">스탠다드 더블룸 도시전망</a>
+            </td>
+          <tr>
+            <td>기준인원 2명</td>
+            <td>최대인원 2명</td>
+            <td>객실면적(평):33.0m(10.0평)</td>
+          <tr>
+          <tr>
+              <td colspan="3"> <span>시설 : 욕조 에어컨 객실연결가능 </span></td>
+          </tr>
+        </tbody>
+        
+        <tr th:each="e:${list1}">
+	            <td th:text="${e.num}"></td>
+	            <td>[[${e.id}]]</td>
+	            <td th:text="${e.pwd}"></td>
+	            <td>[[${e.name}]]</td>
+	            <td>[[${e.age}]]</td>
+	            <td>[[${e.mdate}]]</td>
+	            <td></td>
+	         </tr>
+	         
+	         
+        <tbody>
+        	<tr th:each="e:${list1}">
+              <td>
+                <label class="checkbox-inline">
+                  <input type="checkbox" class="chk" name="chk" value="">
+                </label>
+              <td>[[${e.fb_num}]]</td>
+              <td>
+                <a href="boardDetail?num=+'[[${e.fb_num}]]'">[[${e.fb_subject}]]</a>
+              </td>
+              <td>[[${e.fb_writer}]]</td>
+              <td>[[${e.fb_hit}]]</td>
+              <td>[[${e.fb_date}]]</td>
+            </tr>
+          </c:forEach>
+        </tbody>
+      </table>
+    </div>
+    <!--/* <%@include file="../temp/pageProcess.jsp" %> */-->
+      <div class="board-content mb50">
+        <button class="input-btn" type="button" id="nologin">글쓰기</button>
+      </div>
+      <script src="https://replit.com/public/js/replit-badge-v2.js" theme="dark" position="bottom-right"></script>
+</article>

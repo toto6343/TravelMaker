@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="EUC-KR">
+    <title>2023. 9. 10.</title>
+</head>
+<body>
+    <div id="data-container"></div>
+
+    <script>
+        // JSON 데이터 문자열을 JavaScript 객체로 파싱
+        var jsonData = {
+            "rows": [
+                {
+                    "Score": "85\uc810",
+                    "EndDt": "2023-09-05",
+                    "ContentId": "9월 5일 시험",
+                    "start": "2022-09-05"
+                },
+                {
+                    "Score": "75\uc810",
+                    "EndDt": "2023-09-10",
+                    "ContentId": "9월 10일 시험",
+                    "start": "2022-09-10"
+                }
+            ]
+        };
+
+        // JSON 데이터를 HTML에 출력
+        var container = document.getElementById("data-container");
+        var html = "<ul>";
+
+        for (var i = 0; i < jsonData.rows.length; i++) {
+            var item = jsonData.rows[i];
+            html += "<li>";
+            html += "<strong>Score:</strong> " + item.Score + "<br>";
+            html += "<strong>End Date:</strong> " + item.EndDt + "<br>";
+            html += "<strong>Content ID:</strong> " + item.ContentId + "<br>";
+            html += "<strong>Start:</strong> " + item.start + "<br>";
+            html += "</li>";
+        }
+
+        html += "</ul>";
+
+        container.innerHTML = html;
+    </script>
+</body>
+</html>

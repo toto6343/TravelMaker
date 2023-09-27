@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+ <nav th:fragment="mininav1Fragment"
+	 class="navbar navbar-expand-lg navbar-dark ftco_navbar ftco-navbar-light" 
+	 id="ftco-navbar">
+	<div class="profile">
+		<div class="profile_1">
+			<input type="hidden" th:value="${session.sessionNick}" name="mini_home_nick"> 
+			<img th:src="@{'../static/resources/imgfile/'+${detail.mini_home_thumbnail}}" style="width: 100%;">
+			<span id="contentmodBtn2">
+				<input class="input-btn" type="button" value="사진 수정" id="modthum" th:onclick="@{'modThumbnail('+${detail.mini_home_num}+')'}">                   
+			</span>
+		</div>
+		<div class="profile_3">
+			<span class="contentModBox">[[${detail.mini_home_content}]]</span>
+			<p id="contentmodBtn">
+				<input class="input-btn" type="button" value="수정" id="modCotent" th:onclick="@{'modContent('+${detail.mini_home_num}+')'}">                   
+			</p>
+		</div>
+			
+		<div class="profile_3">
+			<div class="profile-dropdown">
+				<div class="dropdown-btn">
+					<div class="dropdown-title">Related Link</div>
+					<div class="triangle-down"></div>
+				</div>
+				<div class="dropdown-content">
+					<a href="/" target="_blank">Home</a>
+					<a href="https://naver.com" target="_blank">Naver</a>
+					<a href="https://cafe.naver.com/kosmo132" target="_blank">Kosmo132</a>
+				</div>
+			</div>
+		</div>
+	</div>
+<script>/*
+   // 이미지 미리보기 함수
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#imgx').attr('src', e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+   // 이미지 파일 업로드 입력 필드 변경 이벤트 핸들러
+	$(function () {
+	    $('[id^=mfile]').change(function () {
+	        if ($(this).val().length > 0) {
+	            readURL(this);
+	        } else {
+	            console.log("이미지 없음");
+	        }
+	    });
+	});
+	*/
+	// 썸네일 편집 함수
+	function modThumbnail(mini_home_num) {
+	    // AJAX 요청을 보냅니다.
+	    $.ajax({
+	        type: "GET",
+	        url: '/trip/miniajax/modThumbnail?num=' + mini_home_num,
+	        dataType: "json",
+	        contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+	        success: function (response) {
+	            if (response.success) {
+	                var comment = response.comment;
+	                var comment_html = `<img src="../static/resources/imgfile/${comment.mini_home_thumbnail}" style="width: 100%;" th:id="'imgx-' + ${mini_home_num}" alt="Image">`;
+	                comment_html += `<input type="file" id="mfile" name="mfile">`;
+	                comment_html += `<button id="upThumbnailBtn-${mini_home_num}" class="input-btn" onclick="upThumbnail(${mini_home_num})">변경완료</button>`;
+	                //comment_html += "<input type=\"button\" value=\"수정\" id=\"modThumbnailBtn\" onclick=\"modThumbnail(" + mini_home_num + ")\">";
+	                $('.profile_1').html(comment_html);
+	            } else {
+	                alert("이미지 정보를 가져오는데 실패했습니다.");
+	            }
+	        },
+	        error: function () {
+	            alert("서버와의 통신에 실패했습니다.");
+	        }
+	    });
+	}
+	// 썸네일 수정 함수
+
+
+
+	function upThumbnail(num) {
+	    // FormData 대신 JSON 데이터를 생성합니다.
+	    //console.log($('#mfile').val());
+	    //console.log($('#mfile').val().match(/[^\\]*$/)[0]);
+	    var mfile = $('#mfile')[0];
+	    //console.log(mfile);
+	    var thumbnail = $('#mfile').val().match(/[^\\]*$/)[0];
+	    var requestData = {
+	        mini_home_num: num,
+	        mini_home_thumbnail: thumbnail
+	    };
+	    //var formData = new FormData();
+		//formData.append("json", new Blob([JSON.stringify(requestData)], {type: "application/json"}));
+		//formData.append("mfile", mfile.files[0]);
+		//console.log(formData);
+	    // AJAX 요청을 보냅니다.
+	    $.ajax({
+	        type: "PUT",
+  	 		//enctype: 'multipart/form-data',
+	        url: '/trip/miniajax/upThumbnail?num=' + num,
+	        data: JSON.stringify(requestData), // JSON 데이터로 변환하여 전송
+	        contentType: "application/json", // Content-Type을 JSON으로 설정
+	        success: function (response) {
+	            if (response.success) {
+	                console.log("a");
+	                //thumbnail(num);
+	            } else {
+	                alert("댓글 업데이트에 실패했습니다.");
+	            }
+	        },
+	        error: function () {
+	            alert("서버와의 통신에 실패했습니다.");
+	        }
+	    });
+	}
+	/* GPT코드
+	function upThumbnail(num) {
+    const mfileInput = document.getElementById('mfile');
+    const mfile = mfileInput.files[0];
+
+    if (mfile) {
+        const formData = new FormData();
+        formData.append("mini_home_num", num);
+        formData.append("mini_home_thumbnail", mfile);
+        formData.append("mfile", mfile);
+		console.log(formData);
+        $.ajax({
+            type: "PUT",
+            url: '/trip/miniajax/upThumbnail?num=' + num,
+            data: JSON.stringify(formData),
+	        contentType: "application/json",
+           // processData: false,
+            success: function (response) {
+                if (response.success) {
+                    console.log("성공");
+                } else {
+                    alert("실패");
+                }
+            },
+            error: function () {
+                alert("서버와의 통신에 실패했습니다.");
+            }
+        });
+    } else {
+        alert("파일을 선택하세요.");
+    }
+} */
+	
+	function thumbnail(num) {
+	    // 파일 업로드 입력 필드에서 파일 이름을 가져옵니다.
+	    const mini_home_thumbnail = $(`#mfile-${num}`).val().split('\\').pop();
+	
+	    var comment_html = `<img src="../static/resources/imgfile/${mini_home_thumbnail}" style="width: 100%;" th:id="'imgx-' + ${num}" alt="Image">`;
+	    comment_html += `<input type="file" id="mfile-${num}" name="mfile">`;
+	    comment_html += `<button id="upThumbnailBtn-${num}" class="input-btn" onclick="upThumbnail(${num})">변경완료</button>`;
+	    comment_html += `<input type="button" value="수정" id="modThumbnailBtn-${num}" onclick="modThumbnail(${num})">`;
+	
+	    // 해당 부분을 업데이트할 요소에 대입합니다.
+	    $(`.profile_1`).html(comment_html);
+	}	
+</script>              
+<script>       
+	//편집 함수
+	function modContent(mini_home_num) {
+	    // AJAX 요청을 보냅니다.
+	    $.ajax({
+	        type: "GET",
+	        url: '/trip/minicontent/modContent?num='+mini_home_num,
+	        dataType: "json",
+	        contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+	        success: function (response) {
+	            const modCotentBtn = document.getElementById("modCotent");
+	            modCotentBtn.remove();
+	        	//alert('편집 함수 작동 성공');
+	            // AJAX 요청이 성공적으로 완료되었을 때 실행되는 콜백 함수입니다.
+	            // 서버에서 댓글 정보를 가져온 결과를 response로 받습니다.
+	            if (response.success) {
+	        		//alert('편집 함수 작동 성공2');
+	                // 댓글 정보를 가져왔으니 수정하는 팝업이나 모달창 등을 띄워서 사용자가 수정할 수 있도록 구현합니다.
+	                var comment = response.comment;
+	                console.log(comment.mini_home_content);
+	                // 예시: 댓글 수정 팝업을 띄우고, 댓글 내용을 입력받는 폼에 comment 변수의 값을 설정합니다.
+	                // 그리고 수정 버튼을 클릭했을 때, 아래와 같이 서버로 수정된 댓글을 보내서 DB에 저장합니다.
+	                // submitModifiedComment(comment);
+	                var comment_html = "<span class=\"comment-li-item1\"  id=\"modCotent\">";
+	                comment_html += "<textarea id=\"mod_mini_content\" name=\"dia_comm_cont\" class=\"dia_comm_cont\">"+comment.mini_home_content+"</textarea>";
+	                comment_html += "<button id=\"upContent\" class=\"input-btn\" onclick=\"upContent("+mini_home_num+")\">수정완료</button></span>";
+	                $(".contentModBox").html(comment_html);
+	            } else {
+	                alert("댓글 정보를 가져오는데 실패했습니다.");
+	            }
+	        },
+	        error: function () {
+	            // AJAX 요청이 실패했을 때 실행되는 콜백 함수입니다.
+	            alert("서버와의 통신에 실패했습니다.");
+	        }
+	    });
+	};	 
+ 
+	function upContent(num) {
+		const mini_home_content = $('#mod_mini_content').val();
+		console.log(num + '번 댓글 업데이트');
+		console.log('수정내용:' + mini_home_content)
+		// AJAX 요청을 보냅니다.
+		  $.ajax({
+		    type: "PUT", // HTTP 요청 메서드를 PUT로 선택합니다.
+		    url: '/trip/minicontent/upMiniContent?num='+ num, // 업데이트를 처리하는 서버의 엔드포인트 URL을 넣어주세요.
+		    dataType: "json", // JSON 형식으로 응답 처리
+		    contentType: "application/json", // Content-Type을 JSON 형식으로 설정
+		    data: JSON.stringify({ 
+		    	mini_home_num : num,
+		    	mini_home_content : mini_home_content,
+		    }), // 업데이트할 데이터를 서버에 전달합니다.
+		    success: function(response) {
+		      // AJAX 요청이 성공적으로 완료되었을 때 실행되는 콜백 함수입니다.
+		      // 서버에서 성공 여부를 확인하는 응답을 받아 처리합니다.
+		      if (response.success) {
+		        // 업데이트가 성공했을 때, 필요한 동작을 수행합니다.
+		        //alert("댓글이 업데이트되었습니다.");
+		        content(num);
+		        // 추가적인 작업을 수행하거나 페이지를 새로 고침하거나 다른 동작을 수행할 수 있습니다.
+		      } else {
+		        // 업데이트가 실패했을 때, 필요한 동작을 수행합니다.
+		        alert("댓글 업데이트에 실패했습니다.");
+		        // 추가적으로 필요한 작업을 수행하세요.
+		      }
+		    },
+		    error: function() {
+		      // AJAX 요청이 실패했을 때 실행되는 콜백 함수입니다.
+		      alert("서버와의 통신에 실패했습니다.");
+		    }
+		  });
+			};	 
+	function content(num) {
+		const mini_home_content = $('#mod_mini_content').val();
+		const mini_home_num = $('#mini_home_num').val();
+	    var content_html = mini_home_content
+	    var contentBtn_html = "<input class=\"input-btn\" type=\"button\" value=\"수정\" id=\"modCotent\" onclick=\"modContent("+num+")\">";
+	    $(".contentModBox").html(content_html);
+	    $("#contentmodBtn").html(contentBtn_html);
+	};
+</script>
+</nav>

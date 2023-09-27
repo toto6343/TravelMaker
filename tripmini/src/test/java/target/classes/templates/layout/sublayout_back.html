@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<meta name="viewport" content="width=device-width">
+    
+    <!-- 여행날짜 캘린더  -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+	
+    <link rel="stylesheet" href="../../static/resources/side-header.css">
+    <script defer src="../../static/resources/js/sub-side-header.js"></script>
+    <script defer src="../../static/resources/js/sub-slide.js"></script>
+    
+    <!-- CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css">
+    <link rel="stylesheet" href="../../static/resources/jquery.timepicker.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+     
+    <!-- 기존 -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Alex+Brush" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../static/resources/open-iconic-bootstrap.min.css">
+    <link rel="stylesheet" href="../../static/resources/animate.css">
+    <link rel="stylesheet" href="../../static/resources/owl.carousel.min.css">
+    <link rel="stylesheet" href="../../static/resources/owl.theme.default.min.css">
+    <link rel="stylesheet" href="../../static/resources/magnific-popup.css">
+    <link rel="stylesheet" href="../../static/resources/aos.css">
+    <link rel="stylesheet" href="../../static/resources/ionicons.min.css">
+    <link rel="stylesheet" href="../../static/resources/bootstrap-datepicker.css">
+    <link rel="stylesheet" href="../../static/resources/jquery.timepicker.css">
+    <link rel="stylesheet" href="../../static/resources/flaticon.css">
+    <link rel="stylesheet" href="../../static/resources/icomoon.css">
+    <link rel="stylesheet" href="../../static/resources/style.css">
+    <link rel="stylesheet" href="../../static/resources/diarylist.css">
+    
+	<script src="../../static/resources/js/ajaxdemo7.js"></script>
+	
+
+    
+    <title>트레블메이커</title>
+</head>
+
+<body id="body-pd">
+    <div class="nav-wrap">
+	<header th:replace="layout/subheader :: subheaderFragment"></header>
+	<div th:replace="layout/subnav :: subnavFragment"></div>
+	<div style="width: 100%; height: 400px; background: url(../../static/resources/images/sub-bg1.jpg); box-sizing: border-box; margin-top: 110px">
+	<div layout:fragment="content"></div>
+	<footer th:replace="layout/footer :: footerFragment"></footer>
+	
+  <!-- loader -->
+  <div id="ftco-loader" class="show fullscreen">
+  	<svg class="circular" width="48px" height="48px">
+  		<circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#EEEEEE"/>
+  		<circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/>
+  	</svg>
+  </div>
+  <!-- script src="static/resources/js/jquery.min.js"></script> -->
+  <script src="../../static/resources/js/jquery-migrate-3.0.1.min.js"></script>
+  <script src="../../static/resources/js/popper.min.js"></script>
+  <script src="../../static/resources/js/bootstrap.min.js"></script>
+  <script src="../../static/resources/js/jquery.easing.1.3.js"></script>
+  <script src="../../static/resources/js/jquery.waypoints.min.js"></script>
+  <script src="../../static/resources/js/jquery.stellar.min.js"></script>
+  <script src="../../static/resources/js/owl.carousel.min.js"></script>
+  <script src="../../static/resources/js/jquery.magnific-popup.min.js"></script>
+  <script src="../../static/resources/js/aos.js"></script>
+  <script src="../../static/resources/js/jquery.animateNumber.min.js"></script>
+  <script src="../../static/resources/js/bootstrap-datepicker.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+  <script src="../../static/resources/js/scrollax.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+  <script src="../../static/resources/js/google-map.js"></script>
+  <script src="../../static/resources/js/main.js"></script>
+  </body>
+</html>
+	
+	
+	
+	
+	
+	
+	
+	

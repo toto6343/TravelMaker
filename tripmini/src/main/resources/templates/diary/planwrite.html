@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{layout/sublayout2}">
+
+<div class="content-con plan_write" layout:fragment="content">
+	<div class="plan_write_subtxt mb30">
+        <h1><span>여행</span>을 <span>계획</span>하세요.</h1>
+        <p>Plan your trip!</p>
+        <h2>[[${session.sessionNick}]]</h2> 
+    </div>
+    <form method="post" action="addPlanDia" autocomplete="off" enctype="multipart/form-data" onsubmit="setHiddenValue(this)"> 
+    <input type="hidden" id="dia_nick" name="dia_nick" th:value="${session.sessionNick}">
+	<div class="plan">
+        <div class="plan_top">
+            <div class="tit-txt">
+                <h2 class="hea-txt2">여행제목</h2>
+                <input id="dia_sub" type="text" class="diatop1 mb30" name="dia_sub" placeholder="여행 제목을 적어주세요" value="속초여행"><br>
+                <h3 class="hea-txt3">한줄평</h3>
+                <input id="dia_summ" type="text" class="diatop2" name="dia_summ" placeholder="여행에 대한 한줄평을 적어주세요" value="친구와함께">
+                <h3 class="hea-txt3">여행날짜</h3>
+				<div class="calender">
+			        <input type="hidden" name="startDate" id="startDateInput" >
+			        <input type="hidden" name="endDate" id="endDateInput">
+			    </div>
+            </div>
+            <div class="mfile">
+                <div class="sum-imgupbtn mb20">
+                    <h3 class="hea-txt3"><label for="mfile">썸네일 사진</label></h3>
+                    <input type="file" id="mfile" name="mfile">
+                </div>
+                <div class="sum-img">
+                    <img src="../static/resources/images/noimage.jpg" id="imgx">
+                </div>
+            </div>
+        </div>
+        <br>
+        <hr style="border: 1px solid #d7d5d5;">
+        <!-- plan_hashtag 시작 -->  
+        <div class="plan_hashtag">
+            <h2>해시태그</h2>
+            <div class="plan_hashtag_input">
+                <input type="text" placeholder="'#' 없이 해시태그 입력" value="해시태그1" name="plan_hash_tag">
+                <input type="text" placeholder="'#' 없이 해시태그 입력" value="해시태그2" name="plan_hash_tag">
+                <input type="text" placeholder="'#' 없이 해시태그 입력" value="해시태그3" name="plan_hash_tag">
+                <input type="text" placeholder="'#' 없이 해시태그 입력" value="해시태그4" name="plan_hash_tag">
+            </div>
+        </div> <!-- plan_hashtag 끝 --> 
+
+        <br>
+        <hr style="border: 1px solid #d7d5d5;">
+        
+        <!-- 날짜 -->
+        <div>
+        <input type="hidden" name="startDate" id="startDateInput" th:value="${startDate}">
+        <input type="hidden" name="endDate" id="endDateInput" th:value="${endDate}">
+          </div>      
+        <!-- 스케줄 시작 -->
+        <div class="plan_sc">
+            <h2>일정</h2>
+            <span>정렬(일정명순, 날짜순, 경비순)</span>
+                <table class="sctable" id="sortableList">
+                    <thead>
+                        <tr class="sctr">
+                            <th class="scth">일정</th>
+                            <th class="scth">날짜</th>
+                            <th class="scth">위치</th>
+                            <th class="scth">메모</th>
+                            <th class="scth scth_type" colspan="2">예상경비</th>
+                            <th class="scth traddmi" colspan="2">일정 추가/빼기</th>
+                            <th class="scth moveRow">순서변경</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="sctr">
+                            <td class="sctd plan_write_loca"><input type="text" placeholder="일정명" name="plan_sc_loca"></td>
+                            <td class="sctd plan_write_time"><input type="date" name="plan_sc_time"></td>
+                            <td class="sctd plan_write_adrr"><input type="text" placeholder="위치" name="plan_sc_addr"></td>
+                            <td class="sctd plan_write_memo"><textarea placeholder="여행에 대한 메모" name="plan_sc_memo"></textarea></td>
+                            <td class="sctd plan_write_type">
+                                <select id="plan_sc_type" name="plan_sc_type" class="rec_sc_select">
+                                    <option>경비종류선택</option>
+                                    <option value="교통비">교통비</option>
+                                    <option value="숙박비">숙박비</option>
+                                    <option value="식비">식비</option>
+                                    <option value="관광비">관광비</option>
+                                    <option value="기타">기타</option>
+                                </select>
+                            </td>
+                            <td class="sctd plan_write_cost"><input type="text" placeholder="경비금액" name="plan_sc_cost"></td>
+                            <td class="sctd plan_write_plus"><input type="button" value="+" id="addRowButton1" onclick="addRowBtn(this)"></td>
+                            <td class="sctd plan_write_minus"><input type="button" value="-" id="minusRowButton1" onclick="minusRowBtn(1)"></td>
+                            <td class="sctd plan_write_moveRowBtn">
+                                <input class="moveRowUp" type="button" value="▲" onclick="moveRow(this.parentNode.parentNode, -1); highlightButton(this)">
+                                <br>
+                                <input class="moveRowDwon" type="button" value="▼" onclick="moveRow(this.parentNode.parentNode, 1); highlightButton(this)">    
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="sctr">
+                            <td class="sctd plan_write_save" colspan="9"><button type="button">일정저장</button></td>
+                        </tr>
+                    </tfoot>
+                </table>
+        </div> <!-- 스케줄 끝 -->
+
+        <br>
+        <hr style="border: 1px solid #d7d5d5;">
+
+
+        <!-- Wallet 시작 -->    
+        <div class="plan_wallet">
+            <h2>Wallet</h2>
+            <p>(일정을 저장하면 경비종류에 따른 전체 금액이 출력됩니다.)</p>
+            <!-- Wallet Div 전체 시작 -->   
+            <div  style="display: flex; justify-content: space-between;">
+                <!-- 전체금액 시작 --> 
+                <div>
+                    <h3>전체금액</h3>
+                    <table class="walltotaltable">
+                        <tr class="walltr">
+                            <th class="wallth">경비종류</th>
+                            <th class="wallth" style="border-right: none;">금액</th>
+                        </tr>
+                        <tr class="walltr">
+                            <th class="walltype">교통비</th>
+                            <td class="walltd"><sapn class="won">\</sapn><sapn class="wallcost">300000</sapn></td>
+                        </tr>
+                        <tr class="walltr">
+                            <th class="walltype">숙박비</th>
+                            <td class="walltd"><sapn class="won">\</sapn><sapn class="wallcost">300000</sapn></td>
+                        </tr>
+                        <tr class="walltr">
+                            <th class="walltype">식비</th>
+                            <td class="walltd"><sapn class="won">\</sapn><sapn class="wallcost">300000</sapn></td>
+                        </tr>
+                        <tr class="walltr">
+                            <th class="walltype">관광비</th>
+                            <td class="walltd"><sapn class="won">\</sapn><sapn class="wallcost">300000</sapn></td>
+                        </tr>
+                        <tr class="walltr">
+                            <th class="walltype">기타</th>
+                            <td class="walltd"><sapn class="won">\</sapn><sapn class="wallcost">300000</sapn></td>
+                        </tr>
+                        <tr class="walltr">
+                            <th class="walltype">합계</th>
+                            <td class="walltd"><sapn class="won">\</sapn><sapn class="wallcost">300000</sapn></td>
+                        </tr>
+                    </table>
+                </div><!-- 전체금액 끝 --> 
+
+                <!-- 세부금액 시작 --> 
+                <div>
+                    <h3>세부금액</h3>
+                    <div style=" max-height: 380px; overflow-y: auto; margin-top: -4px; ">
+                        <table class="walltable">
+                            <thead>
+                                <tr class="walltr">
+                                    <th class="wallth">일정명</th>
+                                    <th class="wallth" style="border-right: none;">예상경비</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="walltr">
+                                    <th class="walltype">교통비</th>
+                                    <td class="walltd"><sapn class="won">\</sapn><sapn class="wallcost">300000</sapn></td>
+                                </tr>
+                                <tr class="walltr">
+                                    <th class="walltype">숙박비</th>
+                                    <td class="walltd"><sapn class="won">\</sapn><sapn class="wallcost">300000</sapn></td>
+                                </tr>
+                                <tr class="walltr">
+                                    <th class="walltype">식비</th>
+                                    <td class="walltd"><sapn class="won">\</sapn><sapn class="wallcost">300000</sapn></td>
+                                </tr>
+                                <tr class="walltr">
+                                    <th class="walltype">관광비</th>
+                                    <td class="walltd"><sapn class="won">\</sapn><sapn class="wallcost">300000</sapn></td>
+                                </tr>
+                                <tr class="walltr">
+                                    <th class="walltype">기타</th>
+                                    <td class="walltd"><sapn class="won">\</sapn><sapn class="wallcost">300000</sapn></td>
+                                </tr>
+                                <tr class="walltr">
+                                    <th class="walltype">합계</th>
+                                    <td class="walltd"><sapn class="won">\</sapn><sapn class="wallcost">300000</sapn></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div><!-- 세부금액 끝 --> 
+
+                <!-- 도넛차트 시작 --> 
+                <div>
+                    <canvas id="donutChart"></canvas>
+                </div><!-- 도넛차트 끝 --> 
+
+            </div> <!-- Wallet Div 전체 끝 --> 
+        </div> <!-- Wallet 끝 -->
+        <br>
+        <hr style="border: 1px solid #d7d5d5;">
+
+        <!-- 준비물 시작 --> 
+        <div class="plan_material">
+            <h2>준비물 <input type="button" onclick="addTable()" value="분류 추가"></h2>
+            <div id="targetTable" class="mtrtable_container">
+            	<div class="mtrdiv">
+		            <table id="drag-table1" class="mtrtable">
+						<tr class="mtrtr">
+						  <th class="mtrth">
+						  	<button type="button" onclick="delmtrtable(this)">X</button>
+						  	<input type="text" placeholder="준비물 분류" name="plan_mtr_class">
+						  	<button type="button" class="add-row-button1" onclick="addmtr(1)">추가</button>
+						  </th>
+						</tr>
+						<tr class="mtrtr">
+						  <td class="mtrtd">
+						  	<button type="button" onclick="delmtrtr(this)">X</button>
+						  	<input type="text" placeholder="준비물 " class="mtr" name="plan_mtr_material">
+						  	<input type="checkbox" class="mtrcheck" name="plan_mtr_check" value="0">
+						  </td>
+						</tr>
+	                </table>
+                </div>
+        	</div>
+        </div> <!-- 준비물 끝 --> 
+        <br>
+        <hr style="border: 1px solid #d7d5d5;">
+        
+        <div style="display: flex; width: 100%">
+	        <!-- 지도 시작 --> 
+	        <div style="width: 50%; border-right: 1px solid #d7d5d5; margin-right: 30px;">
+	            <h2>지도</h2>
+	           	 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3166.307986419744!2d126.87709437578152!3d37.47705787206194!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357b619785e31b51%3A0xbd94c111ed53f41e!2z7ZWc6528IOybkOyVpOybkCDtg4Dsm4wg7KeA7Iud7IKw7JeF7IS87YSw!5e0!3m2!1sko!2skr!4v1692173027112!5m2!1sko!2skr" 
+	           	 	width="90%" height="450px" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+	        </div> <!-- 지도 끝 --> 
+	        <!-- 사진 시작 --> 
+	        <div style="width: 50%;" class="plan_photo" >
+	            <h2>사진</h2>
+					<input type="file" id="recimgfile" name="recimgfile" multiple onclick="imageInput()">
+					<div id="preview-container" class="preview-container">
+					<!-- 사진 추가될 부분 -->
+					</div>
+	        </div> <!-- 사진 끝 --> 
+        </div>
+    </div> <!-- plan 끝 -->
+    <button type="submit">등록</button>
+    </form>
+ <!-- plan_write -->
+<!-- 
+<div style="height: 500px; width: 300px; margin-top: 50px;">
+    <div class="chartWrap">
+        <div class="chart">
+            <div class="chart-bar" data-deg="50"></div>
+            <div class="chart-bar" data-deg="95"></div>
+            <div class="chart-bar" data-deg="200"></div>
+            <div class="chart-bar" data-deg="15"></div>
+        </div>
+    </div>  
+    
+</div> -->
+
+
+    <script type="text/javascript">
+    var dateFilterAdded = false;
+    function addDateFilter() {
+        if (!dateFilterAdded) {
+            var datefilterInput = document.createElement("input");
+            datefilterInput.type = "text";
+            datefilterInput.name = "datefilter";
+            datefilterInput.value = "";
+            document.body.appendChild(datefilterInput);
+            $(datefilterInput).daterangepicker({
+                autoUpdateInput: false,
+                locale: {
+                    cancelLabel: 'Clear'
+                }
+            });
+            $(datefilterInput).on('apply.daterangepicker', function(ev, picker) {
+                $('#startDateInput').val(picker.startDate.format('MM/DD/YYYY'));
+                $('#endDateInput').val(picker.endDate.format('MM/DD/YYYY'));
+                $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+            });
+            $(datefilterInput).on('cancel.daterangepicker', function(ev, picker) {
+                $('#startDateInput').val('');
+                $('#endDateInput').val('');
+                $(this).val('');
+            });
+            dateFilterAdded = true;
+        }
+    }
+    </script>
+
+
+<script>
+	window.addEventListener('DOMContentLoaded', function() {
+		var form = document.querySelector('form'); // 폼 요소를 가져옵니다
+		var inputInSecondRow = document.querySelector('tr.mtrtr:nth-child(2) input[name="plan_mtr_material"]');
+		var hiddenInputInThirdRow = document.querySelector('tr.mtrtr:nth-child(3) input[name="plan_mtr_class"]');
+		
+		form.addEventListener('submit', function(event) {
+		  // 두 번째 행의 입력 요소에서 값을 가져옵니다
+			var inputValue = inputInSecondRow.value;
+		    
+		    // 세 번째 행의 숨겨진 입력 요소에 값을 설정합니다
+		    hiddenInputInThirdRow.value = inputValue;
+		});
+	});
+</script>
+<script>
+// 새로운 파일 입력 엘리먼트에 이벤트 리스너 추가
+function imageInput() {
+    $('#recimgfile').one('change', function (event) {
+        handleImageUpload(event);
+    });
+}
+
+// handleImageUpload 함수 수정
+function handleImageUpload(event) {
+	const files = event.target.files;
+	const previewContainer = document.getElementById("preview-container");
+    console.log(files, 'event.target.files');
+
+    // 이전 미리보기 이미지 제거
+    //previewContainer.innerHTML = "";
+
+    // 선택한 이미지들에 대한 미리보기 생성
+    for (let i = 0; i < files.length; i++) {
+    	const file = files[i];
+    	const reader = new FileReader();
+        reader.onload = function (event) {
+        	const imageDiv = document.createElement("div");
+        	const imageUrl = event.target.result;
+        	const previewImage = document.createElement("img");
+            previewImage.setAttribute("src", imageUrl);
+            previewImage.setAttribute("class", "preview-image");
+            imageDiv.appendChild(previewImage);
+
+            // 삭제 버튼 추가
+            const deleteButton = document.createElement("button");
+            deleteButton.setAttribute("class", "delete-button");
+            deleteButton.textContent = "삭제";
+            deleteButton.addEventListener("click", function () {
+                // 해당 이미지와 숨겨진 입력 요소를 미리보기에서 제거
+                imageDiv.remove();
+            });
+            imageDiv.appendChild(deleteButton);
+
+
+            previewContainer.appendChild(imageDiv);
+        };
+        reader.readAsDataURL(file);
+    }
+}
+</script>
+<script>
+	/* 준비물 추가 및 삭제 함수*/
+	var addmtrnum = 2; // 준비물 분류 추가버튼
+	
+	// 준비물 추가 함수
+	function addmtr(num) {
+	    const tableId = "drag-table"+num;
+	    const table = document.getElementById(tableId);
+	    const newRow = document.createElement("tr");
+	    newRow.setAttribute("class", "mtrtr");
+	    newRow.innerHTML = `<td class="mtrtd">
+	    						<button type="button" onclick="delmtrtr(this)">X</button>
+	    						<input type="text" placeholder="준비물 " class="mtr" name="plan_mtr_material">
+	    						<input type="checkbox" class="mtrcheck" name="plan_mtr_check" value="0">
+	    					</td>`;
+	    table.querySelector("tbody").appendChild(newRow);
+	  }
+	// 준비물 삭제 함수
+    function delmtrtr(button) {
+    	var row = button.parentElement.parentElement;
+        var rows = row.parentElement.querySelectorAll('.mtrtr');
+        console.log(rows.length)
+        if (rows.length > 2) {
+        	row.remove();
+        }else{
+            alert("더 이상 준비물을 삭제할 수 없습니다.");
+        }
+    }
+	// 준비물 분류 추가 함수
+    function addTable(){
+    	console.log(addmtrnum);
+    	if(addmtrnum < 6){
+	    	var addTableTarget =`
+	        	<div class="mtrdiv">
+	            <table id="drag-table`+addmtrnum+`" class="mtrtable">
+					<tr class="mtrtr">
+					  <th class="mtrth">
+					  	<button type="button" onclick="delmtrtable(this)">X</button>
+					  	<input type="text" placeholder="준비물 분류" name="plan_mtr_class">
+					  	<button type="button" class="add-row-button1" onclick="addmtr(`+addmtrnum+`)">추가</button>
+					  </th>
+					</tr>
+					<tr class="mtrtr">
+					  <td class="mtrtd">
+					  	<button type="button" onclick="delmtrtr(this)">X</button>
+					  	<input type="text" placeholder="준비물 " class="mtr" name="plan_mtr_material">
+					  	<input type="checkbox" class="mtrcheck" name="plan_mtr_check" value="0">
+					  </td>
+					</tr>
+	            </table>
+	        </div>`;
+	    	$('#targetTable').append(addTableTarget);
+	    	addmtrnum++
+    	}
+    	else{
+    		alert("최대 5개까지 가능합니다.");
+	    }
+    }
+	// 준비물 분류 삭제 함수
+    function delmtrtable(button) {
+        var tableDiv = button.closest('.mtrdiv');
+        var tableDivs = document.querySelectorAll('.mtrdiv');
+        console.log("tableDivs.length"+tableDivs.length)
+        if (tableDivs.length > 1) {
+            tableDiv.remove();
+            addmtrnum--
+        }else{
+            alert("더 이상 준비물분류를 삭제할 수 없습니다.");
+        }
+    }
+</script>
+<script>
+    var data = {
+      labels: ['Red', 'Blue', 'Yellow'],
+      datasets: [{
+        data: [300, 50, 100],
+        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+        hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+      }]
+    };
+
+    var options = {
+      maintainAspectRatio: false, // 차트의 가로 세로 비율을 유지하지 않습니다.
+      responsive: true, // 차트 크기를 뷰포트에 따라 자동으로 조절합니다.
+      cutoutPercentage: 100, // 도넛의 크기 비율을 조절합니다. 0에서 100까지 값을 지정할 수 있습니다.
+    };
+
+    var ctx = document.getElementById('donutChart').getContext('2d');
+    var donutChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: data,
+      options: options
+    });
+  </script>
+
+<script>
+    $(document).ready(function() {
+    $('.table-container').scroll(function() {
+        // 첫 번째 행의 너비와 위치를 변경하여 고정시킴
+        $('.walltr:first-child').css('transform', 'translateY(' + $(this).scrollTop() + 'px)');
+    });
+});
+    
+    var _chart = document.querySelector('.chart');
+    var _chartBar = document.querySelectorAll('.chart-bar');
+    var color = ['#9986dd','#fbb871','#bd72ac','#f599dc'] //색상
+    var newDeg = []; //차트 deg
+
+    function insertAfter(newNode, referenceNode) {
+        referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+    }
+
+    function chartLabel(){
+    var _div = document.createElement('div');
+    _div.className = 'chart-total';
+    _div.innerHTML = `<span class="chart-total-num">Total:<br> 3,135</span>
+                        <span class="chart-total-text1">Automobile</span>
+                        <span class="chart-total-text2">Disablility</span>
+                        <span class="chart-total-text3">Life</span>
+                        <span class="chart-total-text4">Property</span>`;
+    insertAfter(_div,_chart);
+    }
+
+    function chartDraw(){ 
+    for( var i=0;i<_chartBar.length;i++){
+        var _num = _chartBar[i].dataset.deg
+        newDeg.push( _num )
+    }
+
+    var num = newDeg.length - newDeg.length;
+    _chart.style.background = 'conic-gradient(#9986dd '+
+                                                    newDeg[num]+'deg, #fbb871 '+
+                                                    newDeg[num]+'deg '+newDeg[num+1]+'deg, #bd72ac '+
+                                                    newDeg[1]+'deg '+newDeg[2]+'deg, #f599dc '+
+                                                    newDeg[2]+'deg )';
+    
+    chartLabel();
+    }
+
+    chartDraw();    
+</script>
+<script>
+    $(document).ready(function() {
+        var datefilterInput = document.createElement("input");
+        datefilterInput.type = "text";
+        datefilterInput.name = "datefilter";
+        datefilterInput.value = "";
+        datefilterInput.placeholder = "여행 날짜를 적어주세요";
+        $(datefilterInput).addClass("centered-input diatop3");
+        $('.calender').append(datefilterInput);
+
+        $(datefilterInput).daterangepicker({
+            showDropdowns: true,                     
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear',
+                separator :" ~ ", 
+                format : 'YYYY-MM-DD',
+                applyLabel : "확인", 
+                cancelLabel :  "취소", 
+                daysOfWeek : ["일", "월", "화", "수", "목", "금", "토"],
+                monthNames :["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"]
+            }
+        });
+        $(datefilterInput).on('apply.daterangepicker', function(ev, picker) {
+            $('#startDateInput').val(picker.startDate.format('YYYY/MM/DD'));
+            $('#endDateInput').val(picker.endDate.format('YYYY/MM/DD'));
+            $(this).val(picker.startDate.format('YYYY/MM/DD') + ' ~ ' + picker.endDate.format('YYYY/MM/DD'));
+        });
+
+        $(datefilterInput).on('cancel.daterangepicker', function(ev, picker) {
+            $('#startDateInput').val('');
+            $('#endDateInput').val('');
+            $(this).val('');
+        });
+    });
+</script>
+
+<script>
+    /* 일정 행 추가 및 삭제 */
+    var addBtnNum = 1; // 추가버튼
+    var minusBtnNum = 1; // 삭제버튼
+
+    // 일정 행 추가 함수
+    function addRowBtn(button) {
+        var table = document.getElementById('sortableList');
+        var currentRow = button.parentNode.parentNode;
+        var newRow = table.insertRow(currentRow.rowIndex + 1);
+        addBtnNum++
+        minusBtnNum++
+
+        // 클래스 복사
+        newRow.className = currentRow.className;
+        // 행 복사
+        newRow.innerHTML = `
+            <td class="sctd plan_write_loca"><input type="text" placeholder="일정명" name="plan_sc_loca"></td>
+            <td class="sctd plan_write_time"><input type="date" name="plan_sc_time"></td>
+            <td class="sctd plan_write_adrr"><input type="text" placeholder="위치" name="plan_sc_addr"></td>
+            <td class="sctd plan_write_memo"><textarea placeholder="여행에 대한 메모" name="plan_sc_memo"></textarea></td>
+            <td class="sctd plan_write_type">
+                <select id="plan_sc_type" name="plan_sc_type" class="rec_sc_select">
+                    <option>경비종류선택</option>
+                    <option value="교통비">교통비</option>
+                    <option value="숙박비">숙박비</option>
+                    <option value="식비">식비</option>
+                    <option value="관광비">관광비</option>
+                    <option value="기타">기타</option>
+                </select>
+            </td>
+            <td class="sctd plan_write_cost"><input type="text" placeholder="경비금액" name="plan_sc_cost"></td>
+            <td class="sctd plan_write_plus"><input type="button" value="+" id="addRowButton`+addBtnNum+`" onclick="addRowBtn(this)"></td>
+            <td class="sctd plan_write_minus"><input type="button" value="-" id="minusRowButton`+minusBtnNum+`" onclick="minusRowBtn(`+minusBtnNum+`)"></td>
+            <td class="sctd plan_write_moveRowBtn">
+                <input class="moveRowUp" type="button" value="▲" onclick="moveRow(this.parentNode.parentNode, -1); highlightButton(this)">
+                <br>
+                <input class="moveRowDwon" type="button" value="▼" onclick="moveRow(this.parentNode.parentNode, 1); highlightButton(this)">    
+            </td>
+        `;
+        // 입력 필드 초기화
+        var inputs = newRow.querySelectorAll('input, textarea, select');
+        inputs.forEach(input => {
+            if (input.type === 'text' || input.type === 'textarea') {
+                input.value = '';
+            } else if (input.type === 'select-one') {
+                input.selectedIndex = 0;
+            }
+        });
+    }
+    // 일정 행 삭제 함수
+    function minusRowBtn(n){
+    	var deleteButtons = document.querySelectorAll("#minusRowButton"+n);
+        var sctr = document.querySelectorAll('.sctr');
+        // 각 삭제 버튼을 순회하며 이벤트 처리 추가
+        deleteButtons.forEach(button => {
+            // 삭제 버튼을 클릭한 행을 찾음
+           //button.click();
+            var row = button.closest(".sctr");
+	            if (sctr.length > 3) {
+	            	row.remove();
+	            }else{
+	                alert("더 이상 삭제할 수 없습니다.");
+	            }
+        });
+    }
+</script>
+<script>
+    /* 일정 행 이동 */
+    function moveRow(row, direction) {
+        var table = document.getElementById('sortableList');
+        var currentIndex = row.rowIndex;
+        var targetIndex = currentIndex + direction;
+        if (targetIndex >= 1 && targetIndex < table.rows.length-1) {
+            var targetRow = table.rows[targetIndex];
+
+            // 저장된 버튼 정보 가져오기
+            var plusButton = row.querySelector('.plan_write_plus input');
+            var minusButton = row.querySelector('.plan_write_minus input');
+
+            // 저장된 데이터 가져오기
+            var locationInput = row.querySelector('.plan_write_loca input');
+            var dateInput = row.querySelector('.plan_write_time input');
+            var addressInput = row.querySelector('.plan_write_adrr input');
+            var memoInput = row.querySelector('.plan_write_memo textarea');
+            var typeSelect = row.querySelector('.plan_write_type select');
+            var costInput = row.querySelector('.plan_write_cost input');
+
+            // 행 옮기기
+            table.deleteRow(currentIndex);
+            table.insertRow(targetIndex);
+            var newRow = table.rows[targetIndex];
+            newRow.className = "sctr"; // 클래스 이름을 설정
+            newRow.innerHTML = targetRow.innerHTML;
+
+            // 행 옮길 때 색 변경 처리
+            newRow.classList.add('highlighted-row'); // 변경될 행에 클래스 추가
+
+            // 버튼 정보 복사
+            newRow.querySelector('.plan_write_plus').innerHTML = plusButton.outerHTML;
+            newRow.querySelector('.plan_write_minus').innerHTML = minusButton.outerHTML;
+
+            // 데이터 설정
+            newRow.querySelector('.plan_write_loca input').value = locationInput.value;
+            newRow.querySelector('.plan_write_time input').value = dateInput.value;
+            newRow.querySelector('.plan_write_adrr input').value = addressInput.value;
+            newRow.querySelector('.plan_write_memo textarea').value = memoInput.value;
+            newRow.querySelector('.plan_write_type select').value = typeSelect.value;
+            newRow.querySelector('.plan_write_cost input').value = costInput.value;
+
+            // 색 변경 원래대로 복구
+            setTimeout(function() {
+                newRow.classList.remove('highlighted-row');}, 500); // 0.5초 후에 클래스 제거
+        }else if (direction === -1 && targetIndex < 1) {
+            alert('더 이상 일정을 올릴 수 없습니다.');
+        } else if (direction === 1 && targetIndex >= table.rows.length - 1) {
+            alert('더 이상 일정을 내릴 수 없습니다.');
+        }
+    }
+    // 일정 순서변경 시 버튼 하이라이트
+    function highlightButton(input) {
+        input.classList.add('btn-highlight'); 
+        setTimeout(function() {
+            input.classList.remove('btn-highlight');}, 500);
+    }
+
+</script>
+<script>
+    // 경비종류 미선택 시 선택 멘트 출력
+    document.addEventListener("DOMContentLoaded", function() {
+        const selectElement = document.getElementById("rec_sc_type");
+        const placeholderOption = selectElement.querySelector("option");
+
+        selectElement.addEventListener("change", function() {
+            if (selectElement.value === "") {
+                alert("경비종류를 선택해주세요.");
+                selectElement.focus();
+            }
+        });
+    });
+</script>
+<script>
+	// 썸네일 사진 미리보기
+    function readURL(input) {
+	  	if(input.files && input.files[0]){
+	      var reader = new FileReader();
+	      reader.onload = function(e) {
+	          $('#imgx').attr('src', e.target.result);
+	      }
+	      reader.readAsDataURL(input.files[0]);
+	  }
+	}
+    $(function () {
+		$('#mfile').change(function() {
+		    if($(this).val().length>0){
+		        readURL(this);
+		    }else{
+		        console.log("이미지없음");
+		    }
+		})
+	})
+</script>
+
+</div>

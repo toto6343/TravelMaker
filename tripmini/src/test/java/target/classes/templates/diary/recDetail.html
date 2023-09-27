@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorate="~{layout/sublayout}">
+
+    
+<div layout:fragment="content">
+	<!--Container Main start-->
+    <div class="content-con record1">
+        <div class="plan-wrap">
+            <h1 class="mb30">여행기록</h1> 
+            <h1 class="mb30">[[${tdvo.dia_sub}]]</h1>
+            <!-- 이미지 영역 -->
+            <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+            <div class="section_container mb50">
+				<div class="swiper mySwiper">
+				    <div class="swiper-wrapper">
+						<div class="swiper-slide" th:each="e:${photolist }">
+							<img th:src="@{'../static/resources/imgfile/'+${e.rec_photo_title}}"alt="">
+						</div>
+					</div>
+	                <div class="swiper-button-prev"></div>
+	                <div class="swiper-button-next"></div>
+				</div>
+                <div class="sec1">
+                    <h2>여행 한줄평</h2>
+                    <p style="padding: 0 50px;">[[${tdvo.dia_summ}]]</p>
+                    <div class="plan-btn">
+                        <button class="plan-btn-item">Day 보기</button>
+                        <button class="plan-btn-item">여행 코스 보기</button>
+                    </div>
+                </div>
+			</div>
+        </div>
+          
+	                <div style="display: flex; justify-content: center;">
+	                    <!-- * 카카오맵 - 지도퍼가기 -->
+	                    <!-- 1. 지도 노드 -->
+	                    <div id="daumRoughmapContainer1688699935919" class="root_daum_roughmap root_daum_roughmap_landing" style="width: 95%;"></div>
+	                    <!--
+	                        2. 설치 스크립트
+	                        * 지도 퍼가기 서비스를 2개 이상 넣을 경우, 설치 스크립트는 하나만 삽입합니다.
+	                    -->
+	                    <script charset="UTF-8" class="daum_roughmap_loader_script" src="https://ssl.daumcdn.net/dmaps/map_js_init/roughmapLoader.js"></script>
+	                    <!-- 3. 실행 스크립트 -->
+	                    <script charset="UTF-8">
+	                        new daum.roughmap.Lander({
+	                            "timestamp" : "1688699935919",
+	                            "key" : "2ffpf",
+	                            "mapHeight" : "360"
+	                        }).render();
+	                    </script>
+	                </div>
+            
+            <!-- 일차 영역 -->
+            <div class="section_container" th:each="e2:${ndayvo} ">
+				<!-- 일차 반복문 시작 -->
+					<div class="sec1">
+						<h2><span>Day [[${e2.rec_nday_nday }]]</span></h2>
+					
+	                <!-- 일정 사진 반복문 시작 -->
+	                <div class="section_container mb50">
+	                	<div class="swiper mySwiper">
+		                    <div class="swiper-wrapper">
+								<div class="swiper-slide" th:each="e3,j:${photolist}" th:if="${e3.rec_photo_nday } == ${e2.rec_nday_nday}" >
+									<img th:src="@{'../static/resources/imgfile/'+${e3.rec_photo_title }}">
+								</div>
+			        		</div>
+			                <div class="swiper-button-prev"></div>
+			                <div class="swiper-button-next"></div>
+		        		</div><!-- 일정 사진 반복문 끝 -->
+					</div>
+
+	                <!-- 일정 반복문 시작 -->
+	                <!-- 일정영역 -->
+	                <div class="plan-sec" th:each="e1,i:${tdvo.rscvolist }" th:if="${e2.rec_nday_nday} == ${e1.rec_sc_nday}">
+						<h3 class="tit">
+	                        <span class="item-li">[[${i.index+1 }]]</span> [[${e1.rec_sc_loca }]]
+	                        <span class="item-time">[[${e1.rec_sc_time }]]</span>
+				        </h3>
+				        <p class="item-memo">[[${e1.rec_sc_memo }]]</p>
+				        <p class="item-money"><label>[[${e1.rec_sc_type }]] : </label>[[${e1.rec_sc_cost }]]</p>
+					</div>
+					<!-- 일정영역 끝-->
+					<!-- 일정 반복문 끝 -->
+
+            </div>
+        </div>
+	
+
+    
+    <!-- 댓글 폼 영역   -->
+		
+		<div class="comment-box">
+			<div class="comment-count">댓글 <span id="count">0</span></div>
+			
+        <div class="comment-wrap mb30">
+			<div class="comment-txt">
+				<h3>댓글쓰기</h3>
+				<input type="hidden" id="dia_comm_num" name="dia_comm_num" th:value="${tdvo.dia_num}">
+				<input type="hidden" id="dia_comm_ip" name="dia_comm_ip" th:value="${session.sessionIP}">
+				
+				<div class="form-group">
+					<label for="uwriter">작성자</label>
+					<input type="text" class="form-control" id="dia_comm_nick" th:value="${session.sessionNick}" readonly="readonly" name="dia_comm_nick" 
+					maxlength="20" required="required" pattern=".{4,100}">
+				</div>
+				<div class="con-txt">
+					<textarea id="dia_comm_cont" name="dia_comm_cont" placeholder="내용"></textarea>
+					<button id="sendComm" class="input-btn">댓글쓰기</button>
+				</div>
+			</div>
+		</div>
+			
+	<!-- 댓글 리스트 -->
+	<div class="comment-wrap commtarget mb30"><!-- 댓글이 들어갈 박스 --></div>
+	</div>
+			<script>
+			    var swiper = new Swiper(".mySwiper", {
+			        effect: "cards",
+			        grabCursor: true,
+			        autoplay: true,
+				    pagination: {
+				        el: '.swiper-pagination',
+				    },
+				    navigation: {
+				        nextEl: ".swiper-button-next",
+				        prevEl: ".swiper-button-prev",
+				    },
+			    });
+			</script>
+<script>
+var cPage = 1;
+$('#sendComm').click(function() {
+		//alert('test2');
+		//Json으로 전달할 파라미터 변수선언
+		const dia_comm_code = $('#dia_comm_num').val();
+		const dia_comm_nick = $('#dia_comm_nick').val();
+		const dia_comm_cont = $('#dia_comm_cont').val();
+		const dia_comm_ip = $('#dia_comm_ip').val();
+		
+		console.log(dia_comm_code);
+		console.log(dia_comm_nick);
+		console.log(dia_comm_cont);
+		
+		
+	
+		if(dia_comm_nick == ''){
+			alert('로그인 후 이용해주세요');
+			return;
+		}else if(dia_comm_cont == '') {
+			alert('내용을 입력하세요');
+			return;
+		}
+		
+		$.ajax({
+			type:'post',
+			url:'/trip/diaComm/insertDiaComm',
+			data: JSON.stringify(
+				{
+					"dia_comm_code":dia_comm_code,
+					"dia_comm_nick":dia_comm_nick,
+					"dia_comm_cont":dia_comm_cont,
+					"dia_comm_ip":dia_comm_ip
+				}
+			),
+			contentType: 'application/json',
+			success:function(data){
+				console.log('통신성공' + data);
+				if(data === 'InsertSuccess') {
+					//alert('댓글 등록이 완료되었습니다.');
+					//console.log('댓글 등록 완료');
+					$('#dia_comm_code').val(dia_comm_code);
+					$('#dia_comm_nick').val(dia_comm_nick);
+  					$('#dia_comm_cont').val('');
+  					$('#dia_comm_ip').val(dia_comm_ip);
+  					getList(cPage);
+				} else {
+					alert('로그인 이후 이용해주시기 바랍니다.');
+					console.log('댓글 등록 실패');
+				}
+			},
+			error:function(){
+				console.log('통신실패');
+			}
+		});// 댓글 비동기 끝
+		
+});// 댓글등록 이벤트 끝
+	
+
+getList(cPage);
+
+function getList(cPage) {
+	const dia_comm_code = $('#dia_comm_num').val();
+	const dia_comm_nick = $('#dia_comm_nick').val();
+	const dia_comm_cont = $('#dia_comm_cont').val();
+	const dia_comm_ip = $('#dia_comm_ip').val();
+	
+	$.getJSON(
+		`/trip/diaComm/diaCommList/${dia_comm_code}?cPage=${cPage}`,
+		function(data) {
+			if(data.total > 0){
+				var list = data.diacommlist;
+				var commCnt = data.total
+				var startPage = data.startPage;
+				var endPage = data.endPage;
+				var nowPage = data.page.nowPage;
+				var pagePerBlock = data.page.pagePerBlock;
+				var totalPage = data.page.totalPage;
+				var i = 0;
+				
+				var comment_html = "<div>";
+				
+				$('#count').html(commCnt);
+				for(i = 0;i < list.length;i++){
+					var commnum = list[i].dia_comm_num;
+					var content = list[i].dia_comm_cont;
+					var writer = list[i].dia_comm_nick;
+					comment_html += "<div class=\"comment-li\">";
+					comment_html += "<table><colgroup><col width=\"80%\"><col width=\"20%\"></colgroup>";
+					comment_html += "<tbody><tr id=\"divComm"+commnum+"\"><td><p class=\"comment-li-item1\" id='dia_comm_nick'>" + writer + "</p>";
+					comment_html += "<p class=\"comment-li-item2\" id='dia_comm_cont'>" + content + "</p>";
+					comment_html += "<input type=\"hidden\" id='dia_comm_num' name='dia_comm_num' value="+commnum+">";
+					if(writer === $("#dia_comm_nick").val()){
+						comment_html += "<p class=\"comment_modBox" + commnum + "\"></p></td>";
+						comment_html += "<td><input class=\"input-btn\" type=\"button\" data-id =\"delComm" + commnum + "\" value=\"삭제\" id=\"delComm" + commnum + "\" name=\"dia_comm_num\" onclick=\"delComm(" + commnum + ")\">";
+						comment_html += "<input class=\"input-btn\" type=\"button\" data-id =\"modComm" + commnum + "\" data-dia-comm-code="+dia_comm_code+" value=\"수정\" id=\"modComm" + commnum + "\" name=\"dia_comm_num\" onclick=\"modComm(" + commnum + ", "+dia_comm_code+")\">";
+						
+						comment_html += "</td></tr></tbody></table></div>";
+							
+					}
+					else{
+						comment_html += "</td></tr></tbody></table></div>";
+					}
+				}
+				
+				//댓글 페이징 처리
+				comment_html += "<div style=\"text-align: center;\">";
+				//이전 페이지
+				if(nowPage <= startPage) {
+					comment_html += "<a href=\"javascript:void(0)\">";
+					comment_html += "첫번째 페이지";
+					comment_html += "</a>";
+				}else {
+					comment_html += "<a href=\"javascript:void(0)\" onclick=\"getList("+(nowPage-1)+")\">";
+					comment_html += "이전";
+					comment_html += "</a>";
+				}
+				for(i=1; i<endPage+1; i++) {
+						comment_html += "<a href=\"javascript:void(0)\" onclick=\"getList("+i+")\">";
+						comment_html += "["+i+"]";
+						comment_html += "</a>";
+				}
+				//다음 페이지
+				if(nowPage >= endPage) {
+					comment_html += "<a href=\"javascript:void(0)\">";
+					comment_html += "마지막 페이지";
+					comment_html += "</a>";
+				}else{
+					comment_html += "<a href=\"javascript:void(0)\" onclick=\"getList("+(nowPage+1)+")\">";
+					comment_html += "다음";
+					comment_html += "</a>";
+				}
+				comment_html += "</div>";
+				
+				$(".commtarget").html(comment_html);
+			}
+			else{
+				var comment_html = "<div>등록된 댓글이 없습니다.</div>";
+				$(".commtarget").html(comment_html);
+			}
+	
+		
+		}
+		);
+};
+//getJson
+
+//편집 함수
+function modComm(commnum, dia_comm_code) {
+	const mod_comm_ip = $('#dia_comm_ip').val();
+    // AJAX 요청을 보냅니다.
+    $.ajax({
+        type: "GET",
+        url: '/trip/diaComm/modDiaComm/' + commnum + "?dia_comm_code=" + dia_comm_code,
+        dataType: "json",
+        contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+        success: function (response) {
+        	//alert('편집 함수 작동 성공');
+            // AJAX 요청이 성공적으로 완료되었을 때 실행되는 콜백 함수입니다.
+            // 서버에서 댓글 정보를 가져온 결과를 response로 받습니다.
+            if (response.success) {
+                // 댓글 정보를 가져왔으니 수정하는 팝업이나 모달창 등을 띄워서 사용자가 수정할 수 있도록 구현합니다.
+                var comment = response.comment;
+                console.log(comment.dia_comm_cont);
+                // 예시: 댓글 수정 팝업을 띄우고, 댓글 내용을 입력받는 폼에 comment 변수의 값을 설정합니다.
+                // 그리고 수정 버튼을 클릭했을 때, 아래와 같이 서버로 수정된 댓글을 보내서 DB에 저장합니다.
+                // submitModifiedComment(comment);
+                
+                 var comment_html = "<p class=\"comment-li-item1\"  id=\"modComm"+commnum+"\">";
+                comment_html += "<input class=\"form-control\" type=\"hidden\" id=\"mod_comm_ip"+commnum+"\" name=\"dia_comm_ip\" value=\"" + mod_comm_ip + "\">";
+                comment_html += "<textarea id=\"mod_comm_cont"+commnum+"\" name=\"dia_comm_cont\" class=\"dia_comm_cont\">";
+                comment_html += comment.dia_comm_cont + "</textarea>";
+                comment_html += "<button id=\"upComm"+commnum+"\" class=\"input-btn\" onclick=\"upComm(" + commnum + ")\">수정완료</button>";
+                comment_html += "</p>";
+                $(".comment_modBox" + commnum).html(comment_html);
+                
+            } else {
+                alert("댓글 정보를 가져오는데 실패했습니다.");
+            }
+        },
+        error: function () {
+            // AJAX 요청이 실패했을 때 실행되는 콜백 함수입니다.
+            alert("서버와의 통신에 실패했습니다.");
+        }
+    });
+};
+
+//삭제 함수
+function delComm(num) {
+  // AJAX 요청을 보냅니다.
+   if (!confirm("정말로 삭제 하시겠습니까?")) {
+        // 취소(아니오) 버튼 클릭 시 이벤트
+        getList(cPage)
+    } else {
+        // 확인(예) 버튼 클릭 시 이벤트
+    	$.ajax({
+    	    type: "DELETE", // HTTP 요청 메서드를 DELETE로 선택합니다.
+    	    url: '/trip/diaComm/delDiaComm/' + num, // 삭제를 처리하는 서버의 엔드포인트 URL을 넣어주세요.
+    	    data: { "dia_comm_num": num }, // 삭제하고자 하는 데이터의 식별자를 서버에 전달합니다.
+    	    dataType: "json",
+    	    success: function(response) {
+    	      // AJAX 요청이 성공적으로 완료되었을 때 실행되는 콜백 함수입니다.
+    	      // 서버에서 성공 여부를 확인하는 응답을 받아 처리합니다.
+    	      //alert("연결에 성공");
+    	      //console.log(response);
+    	      //console.log(typeof response.success);
+    	      if (response.success) {
+    	        // 삭제가 성공했을 때, 필요한 동작을 수행합니다.
+    	        //alert("삭제되었습니다.");
+    	        // 삭제한 버튼을 DOM에서도 제거할 수 있습니다.
+    	        $('#divComm' + num).remove();
+    	        getList(cPage);
+    	      } else {
+    	        // 삭제가 실패했을 때, 필요한 동작을 수행합니다.
+    	        alert("삭제에 실패했습니다.");
+    	        // 추가적으로 필요한 작업을 수행하세요.
+    	      }
+    	    },
+    	    error: function() {
+    	      // AJAX 요청이 실패했을 때 실행되는 콜백 함수입니다.
+    	      console.log("넘버:"+num);
+    	      alert("서버와의 통신에 실패했습니다.");
+    	    }
+    	  });
+    }
+  
+};
+
+
+function upComm(num) {
+	const dia_comm_cont = $('#mod_comm_cont'+num).val();
+	const dia_comm_ip = $('#mod_comm_ip'+num).val();
+	console.log(num + '번 댓글 업데이트');
+	console.log('수정내용:' + dia_comm_cont)
+	// AJAX 요청을 보냅니다.
+	  $.ajax({
+	    type: "PUT", // HTTP 요청 메서드를 PUT로 선택합니다.
+	    url: '/trip/diaComm/upDiaComm/' + num, // 업데이트를 처리하는 서버의 엔드포인트 URL을 넣어주세요.
+	    dataType: "json", // JSON 형식으로 응답 처리
+	    contentType: "application/json", // Content-Type을 JSON 형식으로 설정
+	    data: JSON.stringify({ 
+	    	dia_comm_num : num,
+	    	dia_comm_cont : dia_comm_cont,
+	    	dia_comm_ip : dia_comm_ip
+	    }), // 업데이트할 데이터를 서버에 전달합니다.
+	    success: function(response) {
+	      // AJAX 요청이 성공적으로 완료되었을 때 실행되는 콜백 함수입니다.
+	      // 서버에서 성공 여부를 확인하는 응답을 받아 처리합니다.
+	      if (response.success) {
+	        // 업데이트가 성공했을 때, 필요한 동작을 수행합니다.
+	        alert("댓글이 업데이트되었습니다.");
+	        getList(cPage);
+	        // 추가적인 작업을 수행하거나 페이지를 새로 고침하거나 다른 동작을 수행할 수 있습니다.
+	      } else {
+	        // 업데이트가 실패했을 때, 필요한 동작을 수행합니다.
+	        alert("댓글 업데이트에 실패했습니다.");
+	        // 추가적으로 필요한 작업을 수행하세요.
+	      }
+	    },
+	    error: function() {
+	      // AJAX 요청이 실패했을 때 실행되는 콜백 함수입니다.
+	      alert("서버와의 통신에 실패했습니다.");
+	    }
+	  });
+	};
+	
+</script>
+</div>
